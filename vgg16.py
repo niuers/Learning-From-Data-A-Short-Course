@@ -136,7 +136,7 @@ class Vgg16():
 
 
     def get_batches(self, path, gen=image.ImageDataGenerator(), shuffle=True, batch_size=8, class_mode='categorical'):
-        """
+        """s
             Takes the path to a directory, and generates batches of augmented/normalized data. Yields batches indefinitely, in an infinite loop.
 
             See Keras documentation: https://keras.io/preprocessing/image/
