@@ -20,7 +20,7 @@
 
 * Count the number of different values
   ```
-  df.value_counts().index[0]
+  df['col_name'].value_counts().index[0]
   ```
 
 * Plot the bar chart ('bar') or pie chart ('pie')
