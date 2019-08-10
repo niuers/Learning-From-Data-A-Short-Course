@@ -1,43 +1,48 @@
 * Deal with **class-imbalanced dataset**. Imbalanced datasets are problematic for modeling because the model will expend most of its effort fitting to the larger class. Since we have plenty of data in both classes, a good way to resolve the problem is to downsample the larger class (restaurants) to be roughly the same size as the smaller class (nightlife).
 * It’s essential to tune hyperparameters when comparing models or features. The default settings of a software package will always return a model.
 
-
-
+# Table of Contents
+* [Evaluation of Feature Engineering Procedure](#evaluation-of-feature-engineering-procedure)
+* [Understand Data](#understand-data)
 
 # Evaluation of Feature Engineering Procedure
-One needs to have a metric of machine learning model performance to evaluate the effectiveness of a feature engineering procedure. 
-First obtain a baseline performance, and compare performance against it after the feature engineering procedure.
+
+* One needs to have a metric of machine learning model performance to evaluate the effectiveness of a feature engineering procedure. 
+  * First obtain a baseline performance
+  * Then compare performance against it after the feature engineering procedure.
 
 # Understand Data
 
-## The four levels of data
-### The nominal level
+### The Four Levels of Data
+#### The Nominal Level
 
-It has the weakest structure. It is discrete and order-less. It consists of data that are purely described by name. Basic examples include blood type (A, O, AB), species of animal, or names of people. These types of data are all qualitative.
-1. Count the number of different values
-```
-df.value_counts().index[0]
-```
-2. Plot the bar chart ('bar') or pie chart ('pie')
-```
-df['col_name'].value_counts().sort_values(ascending=False).head(20).plot(kind='bar')
-```
+> It has the weakest structure. It is discrete and order-less. It consists of data that are purely described by name. Basic examples include blood type `(A, O, AB)`, species of animal, or names of people. These types of data are all qualitative.
 
-### The ordinal level
+* Count the number of different values
+  ```
+  df.value_counts().index[0]
+  ```
 
-The ordinal scale inherits all of the properties of the nominal level, but has important additional properties:
-Data at the ordinal level can be naturally ordered
-This implies that some data values in the column can be considered better than or greater than others
+* Plot the bar chart ('bar') or pie chart ('pie')
+  ```
+  df['col_name'].value_counts().sort_values(ascending=False).head(20).plot(kind='bar')
+  ```
 
-As with the nominal level, data at the ordinal level is still categorical in nature, even if numbers are used to represent the categories.
-1. Median and percentiles
-2. Stem-and-leaf plots
-3. Box plot
-```
-df['col'].value_counts().plot(kind='box')
-```
+#### The Ordinal Level
 
-### The interval level
+* The ordinal scale inherits all of the properties of the nominal level, but has important additional properties:
+  * Data at the ordinal level can be naturally ordered
+  * This implies that some data values in the column can be considered better than or greater than others
+
+* As with the nominal level, data at the ordinal level is still categorical in nature, even if numbers are used to represent the categories.
+  * Median and percentiles
+  * Stem-and-leaf plots
+  * Box plot
+  ```
+  df['col'].value_counts().plot(kind='box')
+  ```
+
+#### The Interval Level
 
 At the interval data level, we are working with numerical data that not only has ordering like at the ordinal level, but also has meaningful differences between values. This means that at the interval level, not only may we order and compare values, we may also add and subtract values.
 1. Check number of unique values
@@ -67,7 +72,7 @@ df.groupby('col1').mean()['col2'].plot()
 f.groupby('col1').mean()['col2'].rolling(20).mean().plot()
 ```
 
-### The ratio level
+#### The ratio level
 
 Now we have a notion of true zero which gives us the ability to multiply and divide values. It allows ratio statement.
 1. Bar chart
