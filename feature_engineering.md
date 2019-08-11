@@ -6,7 +6,7 @@
 * [Understand Data](#understand-data)
 
 # Evaluation of Feature Engineering Procedure
-
+ 
 * One needs to have a metric of machine learning model performance to evaluate the effectiveness of a feature engineering procedure. 
   * First obtain a baseline performance
   * Then compare performance against it after the feature engineering procedure.
