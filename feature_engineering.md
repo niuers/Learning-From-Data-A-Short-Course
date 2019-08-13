@@ -32,7 +32,7 @@
 
 * The ordinal scale inherits all of the properties of the nominal level, but has important additional properties:
   * Data at the ordinal level can be naturally ordered
-  * This implies that some data values in the column can be considered better than or greater than others
+  * This implies that some data values in the column can be considered better than or greater than others (e.g. grades A,B,C)
 
 * As with the nominal level, data at the ordinal level is still categorical in nature, even if numbers are used to represent the categories.
   * Median and percentiles
@@ -44,19 +44,25 @@
 
 #### The Interval Level
 
-At the interval data level, we are working with numerical data that not only has ordering like at the ordinal level, but also has meaningful differences between values. This means that at the interval level, not only may we order and compare values, we may also add and subtract values.
+* At the interval data level, we are working with numerical data that not only has ordering like at the ordinal level, but also has meaningful differences between values. This means that at the interval level, not only may we order and compare values, we may also add and subtract values. 
+* Ratios of values have no meaning, because the value of zero is arbitrary. e.g. temperature in degrees Fahrenheit or degrees Celsius and time.
+
+
 1. Check number of unique values
 ```
 df['col'].nunique()
 ```
+
 2. Plot histogram, use sharex=True to put all x-axis in one scale
 ```
 df['col'].hist(by=df['val'], sharex=True, sharey=True, figsize=(10, 10), bins=20)
 ```
+
 3. Plot mean values
 ```
 df.groupby('val')['col'].mean().plot(kind='line')
 ```
+
 4. Scatter plot of two columns
 ```
 fig, ax = plt.subplots(figsize=(10,5))
@@ -73,8 +79,8 @@ f.groupby('col1').mean()['col2'].rolling(20).mean().plot()
 ```
 
 #### The ratio level
+* Now we have a notion of true zero which gives us the ability to multiply and divide values. It allows ratio statement. e.g. Degrees Kelvin has a 0 point (absolute 0, no Degree Kelvin below 0) and the steps in both these scales have the same degree of magnitude.	
 
-Now we have a notion of true zero which gives us the ability to multiply and divide values. It allows ratio statement.
 1. Bar chart
 ```
 fig = plt.figure(figsize=(15,5))
@@ -82,22 +88,30 @@ ax = fig.gca()
 
 df.groupby('col1')[['col2']].mean().sort_values('col2', ascending=False).tail(20).plot.bar(stacked=False, ax=ax, color='darkorange')
 ```
+
 ## Numerical Data
-1. The first sanity check for numeric data is whether the magnitude matters. Do we just need to know whether it’s positive or negative? Or perhaps we only need to know the magnitude at a very coarse granularity? This sanity check is particularly important for automatically accrued numbers such as counts—the number of daily visits to a website, the number of reviews garnered by a restaurant, etc.
-1. Next, consider the scale of the features. Models that are smooth functions of input features are sensitive to the scale of the input.
-Logical functions, on the other hand, are not sensitive to input feature scale. Another example of a logical function is the step function (e.g., is input x greater than 5?). Decision tree models consist of step functions of input features. Hence, models based on space-partitioning trees (decision trees, gradient boosted machines, random forests) are not sensitive to scale. 
 
-The only exception is if the scale of the input grows over time, which is the case if the feature is an accumulated count of some sort—eventually it will grow outside of the range that the tree was trained on. If this might be the case, then it might be necessary to rescale the inputs periodically. Another solution is the bin-counting method
+1. The first sanity check for numeric data is whether the magnitude matters. This sanity check is particularly important for automatically accrued numbers such as counts—the number of daily visits to a website, the number of reviews garnered by a restaurant, etc.
+   * Do we just need to know whether it’s positive or negative? 
+   * Or perhaps we only need to know the magnitude at a very coarse granularity? 
+   
+1. Next, consider the scale of the features. 
+   * Models that are smooth functions of input features are sensitive to the scale of the input.
+   * Logical functions, on the other hand, are not sensitive to input feature scale. Another example of a logical function is the step function (e.g., is input x greater than 5?). 
+     * Decision tree models consist of step functions of input features. Hence, models based on space-partitioning trees (decision trees, gradient boosted machines, random forests) are not sensitive to scale. 
+     * The only exception is if the scale of the input grows over time, which is the case if the feature is an accumulated count of some sort—eventually it will grow outside of the range that the tree was trained on. If this might be the case, then it might be necessary to rescale the inputs periodically. Another solution is the bin-counting method.
 
-1. It’s also important to consider the distribution of numeric features. 
-The distribution of input features matters to some models more than others. For instance, the training process of a linear regression model assumes that prediction errors are distributed like a Gaussian. This is usually fine, except when the prediction target spreads out over several orders of magnitude. In this case, the Gaussian error assumption likely no longer holds. One way to deal with this is to transform the output target in order to tame the magnitude of the growth. (Strictly speaking this would be target engineering, not feature engineering.) Log transforms, which are a type of power transform, take the distribution of the variable closer to Gaussian.
+1. It’s also important to consider the distribution of numeric features. The distribution of input features matters to some models more than others. 
+   * For instance, the training process of a linear regression model assumes that prediction errors are distributed like a Gaussian. This is usually fine, except when the prediction target spreads out over several orders of magnitude. In this case, the Gaussian error assumption likely no longer holds. 
+   * One way to deal with this is to transform the output target in order to tame the magnitude of the growth. (Strictly speaking this would be target engineering, not feature engineering.) 
+   * Log transforms, which are a type of power transform, take the distribution of the variable closer to Gaussian.
 
 ### Feature space vs Data space
-Collectively, a collection of data can be visualized in feature space as a point cloud. Conversely, we can visualize features in data space. 
-* Picture the set of data points in feature space. Each data point is a dot, and the whole set of data points forms a blob.
+* Collectively, a collection of data can be visualized in feature space as a point cloud. Picture the set of data points in feature space. Each data point is a dot, and the whole set of data points forms a blob.
+* Conversely, we can visualize features in data space. 
 
 ### Dealing with Counts
-It is a good idea to check the scale and determine whether to keep the data as raw numbers, convert them into binary values to indicate presence, or bin them into coarser granularity. 
+* It is a good idea to check the scale and determine whether to keep the data as raw numbers, convert them into binary values to indicate presence, or bin them into coarser granularity. 
 
 1. Binarization
 1. Quantization or Binning. Raw counts that span several orders of magnitude are problematic for many models. In a linear model, the same linear coefficient would have to work for all possible values of the count. Large counts could also wreak havoc in unsupervised learning methods such as k-means clustering, which uses Euclidean distance as a similarity function to measure the similarity between data points. A large count in one element of the data vector would outweigh the similarity in all other elements, which could throw off the entire similarity measurement.
