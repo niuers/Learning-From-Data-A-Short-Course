@@ -1,9 +1,24 @@
+# How to Master
+* Mastering a subject is not just about knowing the definitions and being able to derive the formulas. 
+* It is not enough to know how the mechanism works and what it can do - one must also understand why it is designed that way, how it relates to other techniques, and what the pros and cons of each approach are. 
+* Mastery is about knowing precisely how something is done, having an intuition for the underlying principles, and integrating it into one's existing web of knowledge. 
+* One does not become a master of something by simply reading a book, though a good book can open new doors. It has to involve practice - putting the ideas to use, which is an iterative process. With every iteration, we know the ideas better and become increasingly more adept and creative at applying them.
+
+
 * Deal with **class-imbalanced dataset**. Imbalanced datasets are problematic for modeling because the model will expend most of its effort fitting to the larger class. Since we have plenty of data in both classes, a good way to resolve the problem is to downsample the larger class (restaurants) to be roughly the same size as the smaller class (nightlife).
 * It’s essential to tune hyperparameters when comparing models or features. The default settings of a software package will always return a model.
 
 # Table of Contents
 * [Evaluation of Feature Engineering Procedure](#evaluation-of-feature-engineering-procedure)
+* [Feature space vs Data space](#feature-space-vs-data-space)
 * [Understand Data](#understand-data)
+  * [The Four Levels of Data](#the-four-levels-of-data)
+* [Numerical Data](#numerical-data)
+* [Dealing with Counts](#dealing-with-counts)
+* [Structured Data Type](#structured-data-type)
+* [Data Cleanup](#data-cleanup)
+* [Feature Selection](#feature-selection)
+
 
 # Evaluation of Feature Engineering Procedure
  
@@ -13,7 +28,7 @@
 
 # Understand Data
 
-### The Four Levels of Data
+## The Four Levels of Data
 #### The Nominal Level
 
 > It has the weakest structure. It is discrete and order-less. It consists of data that are purely described by name. Basic examples include blood type `(A, O, AB)`, species of animal, or names of people. These types of data are all qualitative.
@@ -78,7 +93,7 @@ df.groupby('col1').mean()['col2'].plot()
 f.groupby('col1').mean()['col2'].rolling(20).mean().plot()
 ```
 
-#### The ratio level
+#### The Ratio Level
 * Now we have a notion of true zero which gives us the ability to multiply and divide values. It allows ratio statement. e.g. Degrees Kelvin has a 0 point (absolute 0, no Degree Kelvin below 0) and the steps in both these scales have the same degree of magnitude.	
 
 1. Bar chart
@@ -89,185 +104,168 @@ ax = fig.gca()
 df.groupby('col1')[['col2']].mean().sort_values('col2', ascending=False).tail(20).plot.bar(stacked=False, ax=ax, color='darkorange')
 ```
 
+## Feature space vs Data space
+* Collectively, a collection of data can be visualized in feature space as a point cloud. Picture the set of data points in feature space. Each data point is a dot, and the whole set of data points forms a blob.
+* Conversely, we can visualize features in data space. 
+
+
 ## Numerical Data
 
 1. The first sanity check for numeric data is whether the magnitude matters. This sanity check is particularly important for automatically accrued numbers such as counts—the number of daily visits to a website, the number of reviews garnered by a restaurant, etc.
    * Do we just need to know whether it’s positive or negative? 
    * Or perhaps we only need to know the magnitude at a very coarse granularity? 
-   
-1. Next, consider the scale of the features. 
-   * Models that are smooth functions of input features are sensitive to the scale of the input.
-   * Logical functions, on the other hand, are not sensitive to input feature scale. Another example of a logical function is the step function (e.g., is input x greater than 5?). 
-     * Decision tree models consist of step functions of input features. Hence, models based on space-partitioning trees (decision trees, gradient boosted machines, random forests) are not sensitive to scale. 
-     * The only exception is if the scale of the input grows over time, which is the case if the feature is an accumulated count of some sort—eventually it will grow outside of the range that the tree was trained on. If this might be the case, then it might be necessary to rescale the inputs periodically. Another solution is the bin-counting method.
 
-1. It’s also important to consider the distribution of numeric features. The distribution of input features matters to some models more than others. 
+1. The scale of the features
+   * Models that are smooth functions of input features are sensitive to the scale of the input.
+   * Logical functions, on the other hand, are not sensitive to input feature scale. 
+   * Another example of a logical function is the step function (e.g., is input x greater than 5?). 
+     * Decision tree models consist of step functions of input features. Hence, models based on space-partitioning trees (decision trees, gradient boosted machines, random forests) are not sensitive to scale. 
+     * The only exception is if the scale of the input grows over time, which is the case if the feature is an accumulated count of some sort—eventually it will grow outside of the range that the tree was trained on. 
+       * If this might be the case, then it might be necessary to rescale the inputs periodically. 
+       * Another solution is the bin-counting method.
+
+1. The distribution of numeric features. It matters to some models more than others. 
    * For instance, the training process of a linear regression model assumes that prediction errors are distributed like a Gaussian. This is usually fine, except when the prediction target spreads out over several orders of magnitude. In this case, the Gaussian error assumption likely no longer holds. 
    * One way to deal with this is to transform the output target in order to tame the magnitude of the growth. (Strictly speaking this would be target engineering, not feature engineering.) 
-   * Log transforms, which are a type of power transform, take the distribution of the variable closer to Gaussian.
+     * Log transforms, which are a type of power transform, take the distribution of the variable closer to Gaussian.
 
-### Feature space vs Data space
-* Collectively, a collection of data can be visualized in feature space as a point cloud. Picture the set of data points in feature space. Each data point is a dot, and the whole set of data points forms a blob.
-* Conversely, we can visualize features in data space. 
+## Dealing with Counts
 
-### Dealing with Counts
 * It is a good idea to check the scale and determine whether to keep the data as raw numbers, convert them into binary values to indicate presence, or bin them into coarser granularity. 
 
-1. Binarization
-1. Quantization or Binning. Raw counts that span several orders of magnitude are problematic for many models. In a linear model, the same linear coefficient would have to work for all possible values of the count. Large counts could also wreak havoc in unsupervised learning methods such as k-means clustering, which uses Euclidean distance as a similarity function to measure the similarity between data points. A large count in one element of the data vector would outweigh the similarity in all other elements, which could throw off the entire similarity measurement.
-One solution is to contain the scale by quantizing the count. In other words, we group the counts into bins, and get rid of the actual count values. Quantization maps a continuous number to a discrete one. We can think of the discretized numbers as an ordered sequence of bins that represent a measure of intensity.
+### Binarization
+### Quantization or Binning
+* Raw counts that span several orders of magnitude are problematic for many models. 
+  * In a linear model, the same linear coefficient would have to work for all possible values of the count. 
+  * Large counts could also wreak havoc in unsupervised learning methods such as k-means clustering, which uses Euclidean distance as a similarity function to measure the similarity between data points. A large count in one element of the data vector would outweigh the similarity in all other elements, which could throw off the entire similarity measurement.
+* One solution is to contain the scale by quantizing the count. In other words, we group the counts into bins, and get rid of the actual count values. 
+  * Quantization maps a continuous number to a discrete one. We can think of the discretized numbers as an ordered sequence of bins that represent a measure of intensity.
 
-In order to quantize data, we have to decide how wide each bin should be. The solutions fall into two categories: fixed-width or adaptive. 
-   1. FIXED-WIDTH BINNING: With fixed-width binning, each bin contains a specific numeric range. The ranges can be custom designed or automatically segmented, and they can be linearly scaled or exponentially scaled. To map from the count to the bin, we simply divide by the width of the bin and take the integer part. When the numbers span multiple magnitudes, it may be better to group by powers of 10 (or powers of any constant): 0–9, 10–99, 100–999, 1000–9999, etc. The bin widths grow exponentially, going from O(10), to O(100), O(1000), and beyond. To map from the count to the bin, we take the log of the count. Exponential-width binning is very much related to the log transform
-   1. QUANTILE BINNING: But if there are large gaps in the counts, then there will be many empty bins with no data. This problem can be solved by adaptively positioning the bins based on the distribution of the data. This can be done using the quantiles of the distribution. 
+#### Decide Bin Width
+* In order to quantize data, we have to decide how wide each bin should be. The solutions fall into two categories: fixed-width or adaptive. 
+* FIXED-WIDTH BINNING
+  * Each bin contains a specific numeric range. The ranges can be custom designed or automatically segmented, and they can be linearly scaled or exponentially scaled. 
+  * To map from the count to the bin, we simply divide by the width of the bin and take the integer part. When the numbers span multiple magnitudes, it may be better to group by powers of 10 (or powers of any constant): 0–9, 10–99, 100–999, 1000–9999, etc. The bin widths grow exponentially, from O(10), to O(100), O(1000), and beyond. To map from the count to the bin, we take the log of the count. Exponential-width binning is very much related to the log transform
+* QUANTILE BINNING
+  * If there are large gaps in the counts, then there will be many empty bins with no data. This problem can be solved by adaptively positioning the bins based on the distribution of the data. This can be done using the quantiles of the distribution. 
   
 ### Log Transformation
-The log function compresses the range of large numbers and expands the range of small numbers. The larger x is, the slower log(x) increments. The log transform is a powerful tool for dealing with positive numbers with a heavy-tailed distribution.
+* The log function compresses the range of large numbers and expands the range of small numbers. The larger x is, the slower log(x) increments. The log transform is a powerful tool for dealing with positive numbers with a heavy-tailed distribution.
 
 ### Power Transforms: Generalization of the Log Transform
-The log transform is a specific example of a family of transformations known as power transforms. In statistical terms, these are variance-stabilizing transformations. To understand why variance stabilization is good, consider the Poisson distribution. This is a heavy-tailed distribution with a variance that is equal to its mean: hence, the larger its center of mass, the larger its variance, and the heavier the tail. Power transforms change the distribution of the variable so that the variance is no longer dependent on the mean. For example, suppose a random variable X has the Poisson distribution. If we transform X by taking its square root, the variance of X˜=sqrt(X) is roughly constant, instead of being equal to the mean.
+* The log transform is a specific example of a family of transformations known as power transforms. In statistical terms, these are variance-stabilizing transformations. 
+* To understand why variance stabilization is good, consider the Poisson distribution. This is a heavy-tailed distribution with a variance that is equal to its mean: hence, the larger its center of mass, the larger its variance, and the heavier the tail. Power transforms change the distribution of the variable so that the variance is no longer dependent on the mean. 
+  * For example, suppose a random variable X has the Poisson distribution. If we transform X by taking its square root, the variance of `X˜=sqrt(X)` is roughly constant, instead of being equal to the mean.
 
-A simple generalization of both the square root transform and the log transform is known as the Box-Cox transform
-Setting λ to be less than 1 compresses the higher values, and setting λ higher than 1 has the opposite effect.
-
-The Box-Cox formulation only works when the data is positive. For nonpositive data, one could shift the values by adding a fixed constant. When applying the Box-Cox transformation or a more general power transform, we have to determine a value for the parameter λ. This may be done via maximum likelihood (finding the λ that maximizes the Gaussian likelihood of the resulting transformed signal) or Bayesian methods. A full treatment of the usage of Box-Cox and general power transforms is outside the scope of this book. Interested readers may find more information on power transforms in Econometric Methods by Johnston and DiNardo (1997).
+* A simple generalization of both the square root transform and the log transform is known as the Box-Cox transform. 
+  * Setting `λ` to be less than 1 compresses the higher values, and setting `λ` higher than 1 has the opposite effect.
+  * The Box-Cox formulation only works when the data is positive. 
+  * For nonpositive data, one could shift the values by adding a fixed constant. 
+  * When applying the Box-Cox transformation or a more general power transform, we have to determine a value for the parameter λ. 
+    * This may be done via maximum likelihood (finding the λ that maximizes the Gaussian likelihood of the resulting transformed signal) or Bayesian methods. 
+    * Interested readers may find more information on power transforms in Econometric Methods by Johnston and DiNardo (1997).
 
 * A probability plot, or probplot, is an easy way to visually compare an empirical distribution of data against a theoretical distribution. This is essentially a scatter plot of observed versus theoretical quantiles. 
 
-## Feature Scaling or Feature Normalization
-* No matter what the scaling method, feature scaling always divides the feature by a constant (known as the normalization constant). Therefore, it does not change the shape of the single-feature distribution. 
-* DON’T “CENTER” SPARSE DATA!
-   Use caution when performing min-max scaling and standardization on sparse features. Both subtract a quantity from the original feature value. For min-max scaling, the shift is the minimum over all values of the current feature; for standardization, it is the mean. If the shift is not zero, then these two transforms can turn a sparse feature vector where most values are zero into a dense one. This in turn could create a huge computational burden for the classifier, depending on how it is implemented (not to mention that it would be horrendous if the representation now included every word that didn’t appear in a document!). Bag-of-words is a sparse representation, and most classification libraries optimize for sparse inputs.
-
-### Min-Max Scaling
-### Standardization (Variance Scaling)
-### ℓ^2 Normalization or ℓ2 scaling
-* This technique normalizes (divides) the original feature value by the ℓ^2 norm or the Euclidean norm. The ℓ2 norm sums the squares of the values of the features across data points, then takes the square root. After ℓ2 normalization, the feature column has norm 1. 
-
-## Interaction Features
+# Feature Interaction
 * A simple pairwise interaction feature is the product of two features. The analogy is the logical AND.
-Decision tree–based models get this for free, but generalized linear models often find interaction features very helpful.
+  * Decision tree–based models get this for free
+  * Generalized linear models often find interaction features very helpful.
+    * The training and scoring time of a linear model with pairwise interaction features would go from `O(n)` to `O(n2)`, where `n` is the number of singleton features.
+    
+* There are a few ways around the computational expense of higher-order interaction features. 
+  * One could perform feature selection on top of all of the interaction features. 
+  * Alternatively, one could more carefully craft a smaller number of complex features.
 
-* The training and scoring time of a linear model with pairwise interaction features would go from O(n) to O(n2), where n is the number of singleton features.
-
-There are a few ways around the computational expense of higher-order interaction features. One could perform feature selection on top of all of the interaction features. Alternatively, one could more carefully craft a smaller number of complex features.
-
-## Feature Selection
-### Filtering
-
-Filtering techniques preprocess features to remove ones that are unlikely to be useful for the model. For example, one could compute the correlation or mutual information between each feature and the response variable, and filter out the features that fall below a threshold.
-
-Filtering techniques are much cheaper than the wrapper techniques described next, but they do not take into account the model being employed. Hence, they may not be able to select the right features for the model. It is best to do prefiltering conservatively, so as not to inadvertently eliminate useful features before they even make it to the model training step.
-
-### Wrapper methods
-
-The wrapper method treats the model as a black box that provides a quality score of a proposed subset for features. There is a separate method that iteratively refines the subset.
-
-### Embedded methods
-These methods perform feature selection as part of the model training process. For example, a decision tree inherently performs feature selection because it selects one feature on which to split the tree at each training step. Another example is the ℓ1 regularizer, which can be added to the training objective of any linear model. The ℓ1 regularizer encourages models that use a few features as opposed to a lot of features, so it’s also known as a sparsity constraint on the model. Embedded methods incorporate feature selection as part of the model training process. 
-
-A full treatment of feature selection is outside the scope of this book. Interested readers may refer to the survey paper by Guyon and Elisseeff (2003).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Structured Data Type
-### Basic Checks
-
+# Structured Data Type
+## Basic Checks
 1. Count the number of rows, missing values, data types etc
 ```df.info()```
-2. Count how many missing values in each column
+
+1. Count how many missing values in each column
 ```df.isnull().sum()```
-3. Check descriptive statistics on quantitative columns
+
+1. Check descriptive statistics on quantitative columns
 ```df.describe()```
-4. Check the differences of histograms for data in category 1 vs. category 2.
-5. Check correlation map
+
+1. Check the differences of histograms for data in category 1 vs. category 2
+1. Check correlation map
+
 ```
 # look at the heatmap of the correlation matrix of data
 import seaborn as sns
 sns.heatmap(df.corr())
 ```
 
-
-
-## Data Cleanup
+# Data Cleanup
 ### Remove rows with missing values in them
-Most time this strategy is not very good.
+* Most time this strategy is not very good.
 ### Impute (fill in) missing values
-Use pipeline to fill with mean or median etc.
+
+1. Use pipeline to fill with mean or median etc.
 ```
 from sklearn.preprocessing import Imputer
 ```
+## Data Scaling
+* No matter what the scaling method, feature scaling always divides the feature by a constant (known as the normalization constant). Therefore, it does not change the shape of the single-feature distribution.
 
-### Data normalization
+### Different Methods of Data Normalization
 1. Z-score standardization
 1. Min-max scaling
-1. Row normalization: It ensure that each row of data has a unit norm, meaning that each row will be the same vector length.
+1. Row normalization
+   * It ensure that each row of data has a unit norm, meaning that each row will be the same vector length.
+1. ℓ2 Normalization or ℓ2 scaling
+   * This technique normalizes (divides) the original feature value by the `ℓ2` norm or the Euclidean norm. The `ℓ2` norm sums the squares of the values of the features **across data points**, then takes the square root. After `ℓ2` normalization, the feature column has norm 1. 
 
-### A list of some popular learning algorithms that are affected by the scale of data
-1. KNN-due to its reliance on the Euclidean Distance
-1. K-Means Clustering - same reasoning as KNN
-1. Logistic regression, SVM, neural networks - if you are using gradient descent to learn weights
-1. Principal component analysis - eigen vectors will be skewed towards larger columns
-1. RBF Kernels, and anything that uses the Euclidean distance.
+### DON’T “CENTER” SPARSE DATA
+  * Use caution when performing min-max scaling and standardization on sparse features. Both subtract a quantity from the original feature value. 
+  * If the shift is not zero, then these two transforms can turn a sparse feature vector where most values are zero into a dense one. This in turn could create a huge computational burden for the classifier, depending on how it is implemented (not to mention that it would be horrendous if the representation now included every word that didn’t appear in a document!). 
+  * Bag-of-words is a sparse representation, and most classification libraries optimize for sparse inputs.
 
-### Encoding Categorical Data
+### List of Algorithms Affected by the Scale of Data
+1. KNN: due to its reliance on the Euclidean Distance
+1. K-Means Clustering: same reasoning as KNN
+1. Logistic regression, SVM, neural networks: if you are using gradient descent to learn weights
+1. Principal component analysis: eigen vectors will be skewed towards larger columns
+1. RBF Kernels, and anything that uses the Euclidean distance
+
+## Encoding Categorical Data
 1. Encoding at the nominal level
    1. Transform our categorical data into dummy variables. 
-The dummy variable trap is when you have independent variables that are multicollinear, or highly correlated. Simply put, these variables can be predicted from each other. So, in our gender example, the dummy variable trap would be if we include both female as (0|1) and male as (0|1), essentially creating a duplicate category. It can be inferred that a 0 female value indicates a male.
+   1. The **dummy variable trap** is when you have independent variables that are multicollinear, or highly correlated. Simply put, these variables can be predicted from each other. So, in our gender example, the dummy variable trap would be if we include both female as (0|1) and male as (0|1), essentially creating a duplicate category. It can be inferred that a 0 female value indicates a male.
+1. Encoding at the ordinal level: To maintain the order, we will use a label encoder. 
 
-1. Encoding at the ordinal level
-To maintain the order, we will use a label encoder. 
+## Bucketing Continuous features into categories
 
-### Bucketing Continuous features into categories
 ```
 pandas.cut
 ```
 
-# Feature Construction
-## Polynomial Features
-A key method of working with numerical data and creating more features is through scikit-learn's PolynomialFeatures class. In its simplest form, this constructor will create new columns that are products of existing columns to capture feature interactions.
-
-## Text Specific Feature Construction
-1. Bag of words representation
-   1. Tokenizing
-   1. Counting
-   1. Normalizing
-
-1. CountVectorizer
-   It converts text columns into matrices where columns are tokens and cell values are counts of occurrences of each token in each document. The resulting matrix is referred to as a document-term matrix because each row will represent a document (in this case, a tweet) and each column represents a term (a word).
-1. The Tf-idf vectorizer
-
 # Feature Selection
-* If your features are mostly categorical, you should start by trying to implement a SelectKBest with a Chi2 ranker or a tree-based model selector.
+
+* If your features are mostly categorical, you should start by trying to implement a `SelectKBest` with a `Chi^2` ranker or a tree-based model selector.
+
 * If your features are largely quantitative, using linear models as model-based selectors and relying on correlations tends to yield greater results.
+
 * If you are solving a binary classification problem, using a Support Vector Classification model along with a SelectFromModel selector will probably fit nicely, as the SVC tries to find coefficients to optimize for binary classification tasks.
+
 * A little bit of EDA can go a long way in manual feature selection. The importance of having domain knowledge in the domain from which the data originated cannot be understated.
 
 ## Statistical-based
-Model-based selection relies on a preprocessing step that involves training a secondary machine learning model and using that model's predictive power to select features.
+* Model-based selection relies on a preprocessing step that involves training a secondary machine learning model and using that model's predictive power to select features.
+
 ### Pearson correlation
+* We will assume that the more correlated a feature is to the response, the more useful it will be. Any feature that is not as strongly correlated will not be as useful to us.
+* It is worth noting that Pearson's correlation generally requires that each column be normally distributed (which we are not assuming). We can also largely ignore this requirement because our dataset is large (over 500 is the threshold).
+* Correlation coefficients are also used to determine feature interactions and redundancies. A key method of reducing overfitting in machine learning is spotting and removing these redundancies.
 
-We will assume that the more correlated a feature is to the response, the more useful it will be. Any feature that is not as strongly correlated will not be as useful to us.
-It is worth noting that Pearson's correlation generally requires that each column be normally distributed (which we are not assuming). We can also largely ignore this requirement because our dataset is large (over 500 is the threshold).
-Correlation coefficients are also used to determine feature interactions and redundancies. A key method of reducing overfitting in machine learning is spotting and removing these redundancies.
 ### Hypothesis testing
+* Select only the best features from a dataset, these tests rely more on formalized statistical methods and are interpreted through what are known as p-values. 
+* In the case of feature selection, the hypothesis we wish to test is along the lines of: 
+  * True or False: This feature has no relevance to the response variable. 
+  * We want to test this hypothesis for every feature and decide whether the features hold some significance in the prediction of the response. 
+* Simply put, the lower the p-value, the better the chance that we can reject the null hypothesis. For our purposes, the smaller the p-value, the better the chances that the feature has some relevance to our response variable and we should keep it.
 
-Feature selection via hypothesis testing will attempt to select only the best features from a dataset, these tests rely more on formalized statistical methods and are interpreted through what are known as p-values. 
-In the case of feature selection, the hypothesis we wish to test is along the lines of: True or False: This feature has no relevance to the response variable. We want to test this hypothesis for every feature and decide whether the features hold some significance in the prediction of the response. 
-Simply put, the lower the p-value, the better the chance that we can reject the null hypothesis. For our purposes, the smaller the p-value, the better the chances that the feature has some relevance to our response variable and we should keep it.
 ```
 # SelectKBest selects features according to the k highest scores of a given scoring function
 from sklearn.feature_selection import SelectKBest
@@ -279,14 +277,45 @@ from sklearn.feature_selection import f_classif
 # chi2 is a very common classification criteria but only allows for positive values
 # regression has its own statistical tests
 ```
-The big take away from this is that the f_classif function will perform an ANOVA test (a type of hypothesis test) on each feature on its own (hence the name univariate testing) and assign that feature a p-value. The SelectKBestwill rank the features by that p-value (the lower the better) and keep only the best k (a human input) features. Let's try this out in Python.
 
-## Model-based
-1. Tree-based model feature importance
-1. Linear model's coef_ attribute
+* The big take away from this is that the `f_classif` function will perform an ANOVA test (a type of hypothesis test) on each feature on its own (hence the name univariate testing) and assign that feature a p-value. The `SelectKBestwill` rank the features by that p-value (the lower the better) and keep only the best k (a human input) features.
+
+## Filtering
+* Filtering techniques preprocess features to remove ones that are unlikely to be useful for the model. 
+  * For example, one could compute the correlation or mutual information between each feature and the response variable, and filter out the features that fall below a threshold.
+* Filtering techniques are much cheaper than the wrapper techniques, but they do not take into account the model being employed. Hence, they may not be able to select the right features for the model. 
+* It is best to do prefiltering conservatively, so as not to inadvertently eliminate useful features before they even make it to the model training step.
+
+## Wrapper methods
+* The wrapper method treats the model as a black box that provides a quality score of a proposed subset for features. There is a separate method that iteratively refines the subset.
+
+## Model Based or Embedded Methods
+* These methods perform feature selection as part of the model training process. 
+  * For example, a decision tree inherently performs feature selection because it selects one feature on which to split the tree at each training step. Check feature importance.
+  * Another example is the `ℓ1` regularizer. The `ℓ1` regularizer encourages models that use a few features as opposed to a lot of features, so it’s also known as a **sparsity constraint** on the model.
+  * Linear model's coef_ attribute
+  
+* Interested readers may refer to the survey paper by Guyon and Elisseeff (2003).
+
+# Feature Construction
+
+## Polynomial Features
+* A key method of working with numerical data and creating more features is through scikit-learn's `PolynomialFeatures` class. In its simplest form, this constructor will create new columns that are products of existing columns to capture feature interactions.
+
+## Text Specific Feature Construction
+1. Bag of words representation
+   1. Tokenizing
+   1. Counting
+   1. Normalizing
+1. CountVectorizer
+   * It converts text columns into matrices where columns are tokens and cell values are counts of occurrences of each token in each document. The resulting matrix is referred to as a **document-term matrix** because each row will represent a document (e.g. a tweet) and each column represents a term (e.g. a word).
+1. The Tf-idf vectorizer
+
 
 # Feature Transformation
-It's a suite of algorithms designed to alter the internal structure of data to produce mathematically superior super-columns. The toughest part of feature transformations is the suspension of our belief that the original feature space is the best. We must be open to the fact that there may be other mathematical axes and systems that describe our data just as well with fewer features, or possibly even better. Feature transformation algorithms are able to construct new features by selecting the best of all columns and combining this latent structure with a few brand new columns
+* It's a suite of algorithms designed to alter the internal structure of data to produce mathematically superior super-columns. The toughest part of feature transformations is the suspension of our belief that the original feature space is the best. We must be open to the fact that there may be other mathematical axes and systems that describe our data just as well with fewer features, or possibly even better. 
+* Feature transformation algorithms are able to construct new features by selecting the best of all columns and combining this latent structure with a few brand new columns
+
 ## Dimension Deduction
 ### PCA
 1. A scree plot is a simple line graph that shows the percentage of total variance explained in the data by each principal component. To build this plot, we will sort the eigenvalues in order of descending value and plot the cumulative variance explained by each component and all components prior.
@@ -309,22 +338,17 @@ It's a suite of algorithms designed to alter the internal structure of data to p
 1. They are also static transformations. No matter what data we input into a PCA or LDA, the output is expected and mathematical. If the data we are using isn't a good fit for PCA or LDA (they exhibit non-linear qualities, for example, they are circular), then the two algorithms will not help us, no matter how much we grid search.
 
 # Feature Learning
-It focuses on feature learning using non-parametric algorithms (those that do not depend on the shape of the data) to automatically learn new features. They do not make any assumptions about the shape of the incoming data and rely on stochastic learning.
-instead of throwing the same equation at the matrix of data every time, they will attempt to figure out the best features to extract by looking at the data points over and over again (in epochs) and converge onto a solution (potentially different ones at runtime).
+* It focuses on feature learning using non-parametric algorithms (those that do not depend on the shape of the data) to automatically learn new features. They do not make any assumptions about the shape of the incoming data and rely on stochastic learning.
+Instead of throwing the same equation at the matrix of data every time, they will attempt to figure out the best features to extract by looking at the data points over and over again (in epochs) and converge onto a solution (potentially different ones at runtime).
+
 ## No-parametric fallacy
-It is important to mention that a model being non-parametric doesn't mean that there are no assumptions at all made by the model during training.
-While the algorithms that we will be introducing in this chapter forgo the assumption on the shape of the data, they still may make assumptions on other aspects of the data, for example, the values of the cells.
-They all involve learning brand new features from raw data. They then use these new features to enhance the way that they interact with data.
+* It is important to mention that a model being non-parametric doesn't mean that there are no assumptions at all made by the model during training. While the algorithms that we will be introducing forgo the assumption on the shape of the data, they still may make assumptions on other aspects of the data, for example, the values of the cells.
+* They all involve learning brand new features from raw data. They then use these new features to enhance the way that they interact with data.
 
 ## Restricted Boltzmann Machine
 1. A simple deep learning architecture that is set up to learn a set number of new dimensions based on a probabilistic model that data follows.
 1. The features that are extracted by RBMs tend to work best when followed by linear models such as linear regression, logistic regression, perceptron's, and so on.
 1. The restriction in the RBM is that we do not allow for any intra-layer communication. This lets nodes independently create weights and biases that end up being (hopefully) independent features for our data.
-
-## Word Embedding
-
-Mastering a subject is not just about knowing the definitions and being able to derive the formulas. It is not enough to know how the mechanism works and what it can do - one must also understand why it is designed that way, how it relates to other techniques, and what the pros and cons of each approach are. Mastery is about knowing precisely how something is done, having an intuition for the underlying principles, and integrating it into one's existing web of knowledge. One does not become a master of something by simply reading a book, though a good book can open new doors. It has to involve practice - putting the ideas to use, which is an iterative process. With every iteration, we know the ideas better and become increasingly more adept and creative at applying them. The goal of this book is to facilitate the application of its ideas.
-
 
 # Text Data: Flattening, Filtering, and Chunking
 
@@ -333,7 +357,7 @@ Mastering a subject is not just about knowing the definitions and being able to 
 
 * Sometimes it is also informative to look at feature vectors in data space. A feature vector contains the value of the feature in each data point. The axes denote individual data points, and the points denote feature vectors.
 With bag-of-words featurization for text documents, a feature is a word, and a feature vector contains the counts of this word in each document. 
-In this way, a word is represented as a “bag-of-documents.”  As we shall see in Chapter 4, these bag-of-documents vectors come from the matrix transpose of the bag-of-words vectors.
+* In this way, a word is represented as a “bag-of-documents.”  As we shall see in Chapter 4, these bag-of-documents vectors come from the matrix transpose of the bag-of-words vectors.
 
 * Bag-of-words is not perfect. Breaking down a sentence into single words can destroy the semantic meaning.
 
