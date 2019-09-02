@@ -42,7 +42,7 @@
 ## Main Principle of Train/Test Split
 * Train/Test setup should represent Train/Deploy scenario as closely as possible
   * Random split of labeled data into train/test is usually the right approach
-  * Time seriese data: create train/test split by splitting in time.
+  * Time seriese data: split data in time, rather than randomly
 
 > Nonstationarity: when the thing you are modeling changes over time.
 * Nonstationarity Takes Two Forms:
