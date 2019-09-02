@@ -1,5 +1,14 @@
 # Table of Contents
 * [Concepts](#concepts)
+  * [What is Machine Learning for?](#what-is-machine-learning-for?)
+  * [What is Machine Learning?](#what-is-machine-learning?)
+  * [How to Setup a Business Problem as a Machine Learning Problem?](#how-to-setup-a-business-problem-as-a-machine-learning-problem?)
+  * [Featurization or Feature Extraction](#featurization-or-feature-extraction)
+  * [Loss Function](#loss-function)
+  * [Main Principle of Train/Test Split](#main-principle-of-train/test-split)
+  * [K-Fold Cross Validation](#k-fold-cross-validation)
+  * [What Might go Wrong?](#what-might-go-wrong?)
+  * [Model Complexity and Overfitting](#model-complexity-and-overfitting)
 * [](#)
 * [](#)
 
@@ -25,8 +34,16 @@
 * A machine learning algorithm takes "training data" as input, "learns" from the training data, and generates an ouptut, which is a "predcition function" that produces output `y` given input `x`.
 
 ## How to Setup a Business Problem as a Machine Learning Problem?
-* What is input?
-* What is the labeled output?
+* What is the business manager really looking for?
+* What type of an ML problem is this?
+* What are the inputs and labels?
+* How would the business manager evaluate success/performance?
+* How would we evaluate the performance of an ML algorithm during development?
+* Can you build a model for one use using another user’s data? Possibly no!
+* How often should we retrain our model?
+* Existing resources/libraries/services that we can leverage?
+* Next steps?
+
 
 ## Featurization or Feature Extraction
 > Mapping raw input `x` to R<sup>d</sup>.
@@ -44,13 +61,6 @@
   * Random split of labeled data into train/test is usually the right approach
   * Time seriese data: split data in time, rather than randomly
 
-> Nonstationarity: when the thing you are modeling changes over time.
-* Nonstationarity Takes Two Forms:
-  * **Covariate Shift**: input distribution changed bewteen training and deployment. (Covariate is another term for input feature)
-    * e.g. once popular search queries become less popular
-  * **Concept Drift**: correct output for given input changes over time.
-    * e.g. season changes and given person no longer is interested in winter coats.
-
 ## K-Fold Cross Validation
 * What's the purpose of cross validation???
   * Is it to build good procedure?
@@ -63,21 +73,28 @@
   * The size of confidence interval grows with the number of things you are testing proportionately.
 
 
-## Problems 
+## What Might go Wrong? 
+### Nonstationarity
+> Nonstationarity: when the thing you are modeling changes over time.
+* Nonstationarity Takes Two Forms:
+  * **Covariate Shift**: input distribution changed bewteen training and deployment. (Covariate is another term for input feature)
+    * e.g. once popular search queries become less popular
+  * **Concept Drift**: correct output for given input changes over time.
+    * e.g. season changes and given person no longer is interested in winter coats.
+
 ### Leakage
 > Information about labels sneak into the features.
 
 ### Sample Bias
 > Test inputs and deployment inputs have different distributions.
 
-## Overfitting
+## Model Complexity and Overfitting
 > Hyperparameter: It is a parameter of the Machine Learning algorithm (which finds the best parameters for a model) itself.
 > Overfitting: training performance is good but test/validation performance is poor.
 
 * Fix overfitting
   * Reduce model complexity
   * Get more training data
-  * 
 
 
   
