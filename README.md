@@ -1,5 +1,5 @@
 # Table of Contents
-* [](#)
+* [Concepts](#concepts)
 * [](#)
 * [](#)
 
@@ -61,6 +61,20 @@
 
 ## Problems 
 ### Leakage
-* 
+> Information about labels sneak into the features.
+
+### Sample Bias
+> Test inputs and deployment inputs have different distributions.
+
+## Overfitting
+> Hyperparameter: It is a parameter of the Machine Learning algorithm (which finds the best parameters for a model) itself.
+> Overfitting: training performance is good but test/validation performance is poor.
+
+* Fix overfitting
+  * Reduce model complexity
+  * Get more training data
+  * 
+
+
   
 
