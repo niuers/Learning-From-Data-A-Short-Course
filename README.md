@@ -24,6 +24,10 @@
   
 * A machine learning algorithm takes "training data" as input, "learns" from the training data, and generates an ouptut, which is a "predcition function" that produces output `y` given input `x`.
 
+## How to Setup a Business Problem as a Machine Learning Problem?
+* What is input?
+* What is the labeled output?
+
 ## Featurization or Feature Extraction
 > Mapping raw input `x` to R<sup>d</sup>.
 
