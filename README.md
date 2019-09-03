@@ -6,7 +6,7 @@
   * [Featurization or Feature Extraction](#featurization-or-feature-extraction)
   * [Loss Function](#loss-function)
   * [Main Principle of Train/Test Split](#main-principle-of-traintest-split)
-  * [Cross Validation](#cross-validation)
+  * [Cross-Validation](#cross-validation)
   * [What Might go Wrong?](#what-might-go-wrong)
   * [Model Complexity and Overfitting](#model-complexity-and-overfitting)
 * [](#)
@@ -61,17 +61,19 @@
   * Random split of labeled data into train/test is usually the right approach
   * Time seriese data: split data in time, rather than randomly
 
-## Cross Validation
+## Cross-Validation
 * What's the purpose of cross validation?
   * (ESL) Cross Validation is used for estimating prediction error.
   * It directly estimates the *expected extra-sample error*: ![expected extra-sample error](resources/ExpectedExtraSampleErrorEqn.gif), the average generalization error when the method, ![hat_f(x)](resources/hatfX.gif) ,is applied to an independent test sample from the join distribution of `X` and `Y`. 
   * We might hope that cross-validation estimates the *conditional error*, with the training set ![Tau](resources/UpperTau.gif) held fixed. But cross-validation typically estimates well only the expected prediction error.
-  
 * Forward Chaining is the cross validation for Time Series
-
 * Finite Class Lemma???
   * As you test more and more on a data set, you are more likely to overfit.
   * The size of confidence interval grows with the number of things you are testing proportionately.
+  
+### K-Fold Cross-Validation  
+
+
 
 
 ## What Might go Wrong? 
