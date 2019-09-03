@@ -73,7 +73,8 @@
   
 ### K-Fold Cross-Validation  
 
-
+### Leave-One-Out Cross-Validation
+* Special case of K-Fold cross-validation when `K=N`.
 
 
 ## What Might go Wrong? 
