@@ -61,10 +61,12 @@
   * Random split of labeled data into train/test is usually the right approach
   * Time seriese data: split data in time, rather than randomly
 
-## K-Fold Cross Validation
+## Cross Validation
 * What's the purpose of cross validation???
   * Is it to build good procedure?
   * Is it to select best prediction function?
+  * (ESL) Cross Validation is used to predict estimation error.
+  * It directly estimates the expected extra-sample error 
   
 * Forward Chaining is the cross validation for Time Series
 
