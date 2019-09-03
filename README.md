@@ -95,7 +95,9 @@
 
 * Cross-Validation can also be used to find the optimal hyperparameter.
   * Given a set of models `f(x,α)` indexed by a tuning parameter `α`, denote by ![The Alphath model fit with the k-th part of the data removed](resources/alphath_model_fit_wo_kth_data.gif) the `αth` model fit with the `kth` part of the data removed. Then for this set of models we define
+  ```
   ![Cross-Validation-with-Alpha-Equation](resources/cv_alpha_eqn.gif)
+  ```
   * The function ![cross_validation_prediction_error](resources/cv_alpha.gif) provides an estimate of the test error curve, and we find the hyperparameter that minimizes it.
   * Our final chosen model is ![chosen_model](resources/f_alpha.gif), which we then fit to all the data.
   
