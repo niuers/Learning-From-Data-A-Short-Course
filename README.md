@@ -2,7 +2,7 @@
 * [Concepts](#concepts)
   * [What is Machine Learning for?](#what-is-machine-learning-for)
   * [What is Machine Learning?](#what-is-machine-learning)
-  * [How to Setup a Business Problem as a Machine Learning Problem?](#how-to-setup-a-business-problem-as-a-machine-learning-problem)
+  * **[How to Setup a Business Problem as a Machine Learning Problem?](#how-to-setup-a-business-problem-as-a-machine-learning-problem)**
   * [Featurization or Feature Extraction](#featurization-or-feature-extraction)
   * [Loss Function](#loss-function)
   * [Main Principle of Train/Test Split](#main-principle-of-traintest-split)
