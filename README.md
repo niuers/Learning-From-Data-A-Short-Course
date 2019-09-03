@@ -65,7 +65,7 @@
 * What's the purpose of cross validation?
   * (ESL) Cross Validation is used for estimating prediction error.
   * It directly estimates the *expected extra-sample error*: ![expected extra-sample error](resources/ExpectedExtraSampleErrorEqn.gif), the average generalization error when the method, ![hat_f(x)](resources/hatfX.gif) ,is applied to an independent test sample from the join distribution of `X` and `Y`. 
-  * We might hope that cross-validation estimates the *conditional error*, with the training set ![Tau](resources/Tau.gif) held fixed. But cross-validation typically estimates well only the expected prediction error.
+  * We might hope that cross-validation estimates the *conditional error*, with the training set ![Tau](resources/UpperTau.gif) held fixed. But cross-validation typically estimates well only the expected prediction error.
   
 * Forward Chaining is the cross validation for Time Series
 
