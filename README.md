@@ -66,7 +66,7 @@
   * Is it to build good procedure?
   * Is it to select best prediction function?
   * (ESL) Cross Validation is used to predict estimation error.
-  * It directly estimates the expected extra-sample error: ![expected extra-sample error](resources/ExpectedExtraSampleErrorEqn.gif)
+  * It directly estimates the expected extra-sample error: ![expected extra-sample error](resources/ExpectedExtraSampleErrorEqn.gif), the average generalization error when the method, ![hat_f(x)](resources/hatfX.gif) ,is applied to an independent test sample from the join distribution of `X` and `Y`. 
   
 * Forward Chaining is the cross validation for Time Series
 
