@@ -7,7 +7,7 @@
   * [Loss Function](#loss-function)
   * [Main Principle of Train/Test Split](#main-principle-of-traintest-split)
   * [Cross-Validation](#cross-validation)
-  * [What Might go Wrong?](#what-might-go-wrong)
+  * [What Might go Wrong with ML?](#what-might-go-wrong-with-ml)
   * [Model Complexity and Overfitting](#model-complexity-and-overfitting)
 * [](#)
 * [](#)
@@ -62,22 +62,29 @@
   * Time seriese data: split data in time, rather than randomly
 
 ## Cross-Validation
-* What's the purpose of cross validation?
-  * (ESL) Cross Validation is used for estimating prediction error.
-  * It directly estimates the *expected extra-sample error*: ![expected extra-sample error](resources/ExpectedExtraSampleErrorEqn.gif), the average generalization error when the method, ![hat_f(x)](resources/hatfX.gif) ,is applied to an independent test sample from the join distribution of `X` and `Y`. 
-  * We might hope that cross-validation estimates the *conditional error*, with the training set ![Tau](resources/UpperTau.gif) held fixed. But cross-validation typically estimates well only the expected prediction error (or average error E<sub>rr</sub>.
-* Forward Chaining is the cross validation for Time Series
-* Finite Class Lemma???
-  * As you test more and more on a data set, you are more likely to overfit.
-  * The size of confidence interval grows with the number of things you are testing proportionately.
+
+### What's the Purpose of Cross-Validation?
+* (ESL) Cross-Validation is used for estimating *prediction error*.
+  * It directly estimates the *expected extra-sample error*: ![expected extra-sample error](resources/ExpectedExtraSampleErrorEqn.gif), the *average generalization error* when the method, ![hat_f(x)](resources/hatfX.gif), is applied to an independent test sample from the join distribution of `X` and `Y`.
+  * We might hope that cross-validation estimates the *conditional error*, with the training set ![Tau](resources/UpperTau.gif) held fixed. But cross-validation typically estimates well only the *expected prediction error* (or *average error* E<sub>rr</sub>.
+
+* Cross-Validation can also be used to find the optimal hyperparameter.
+  * Given a set of models `f(x,α)`,
+  * It provides an estimate of the *test error curve*, and we find the hyperparameter that minimizes it. 
   
 ### K-Fold Cross-Validation  
 
 ### Leave-One-Out Cross-Validation
 * Special case of K-Fold cross-validation when `K=N`.
 
+### Other Related
+* Forward Chaining is the cross validation for Time Series
+* Finite Class Lemma???
+  * As you test more and more on a data set, you are more likely to overfit.
+  * The size of confidence interval grows with the number of things you are testing proportionately.
 
-## What Might go Wrong? 
+
+## What Might go Wrong with ML? 
 ### Nonstationarity
 > Nonstationarity: when the thing you are modeling changes over time.
 * Nonstationarity Takes Two Forms:
