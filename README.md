@@ -21,12 +21,11 @@
 # Concepts
 ## What is Machine Learning for?
 * Solve a prediction problem: given an input `x`, predict an "appropriate" output `y`
-* Describe how the given data are organized or clustered.
-
-* Most Common ML problem types
   * Binary Classification
   * Multiclass
   * Regression
+
+* Describe how the given data are organized or clustered.
   * Clustering
 
 
