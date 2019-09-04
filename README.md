@@ -32,10 +32,8 @@
 
 ## What is Machine Learning?
 > Prediction function: It takes input `x` and produce an output `y`.
-* Machine learning helps to find the **best prediction funciton**.
-  * Machine Learning is not a rule based system.
-  
 * A machine learning algorithm takes "training data" as input, "learns" from the training data, and generates an ouptut, which is a "predcition function" that produces output `y` given input `x`.
+  * Machine learning helps to find the **best prediction funciton**. 
 
 ## How to Setup a Business Problem as a Machine Learning Problem?
 * What is the business manager really looking for?
