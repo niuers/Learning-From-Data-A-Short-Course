@@ -20,20 +20,21 @@
 
 # Concepts
 ## What is Machine Learning for?
-* Solve a prediction problem: 
-  * given an input `x`
-  * predict an "appropriate" output `y`
+* Solve a prediction problem: given an input `x`, predict an "appropriate" output `y`
+* Describe how the given data are organized or clustered.
 
 * Most Common ML problem types
   * Binary Classification
   * Multiclass
   * Regression
+  * Clustering
 
 
 ## What is Machine Learning?
+
 > Prediction function: It takes input `x` and produce an output `y`.
-* A machine learning algorithm takes "training data" as input, "learns" from the training data, and generates an ouptut, which is a "predcition function" that produces output `y` given input `x`.
-  * Machine learning helps to find the **best prediction funciton**. 
+
+> A machine learning algorithm takes "training data" as input, "learns" from the training data, and generates an ouptut, which is a "predcition function". Machine learning helps to find the **best prediction funciton**. 
 
 ## How to Setup a Business Problem as a Machine Learning Problem?
 * What is the business manager really looking for?
