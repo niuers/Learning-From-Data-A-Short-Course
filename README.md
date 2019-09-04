@@ -10,6 +10,9 @@
   * [Model Complexity and Overfitting](#model-complexity-and-overfitting)  
 * [Cross-Validation](#cross-validation)
   * [What's the Purpose of Cross-Validation?](#whats-the-purpose-of-cross-validation)
+  * [Types of Cross-Validation](#types-of-cross-validation)
+  * [How to Choose K?](#how-to-choose-k)
+  * [The Right Way to Do Cross-Validation](#the-right-way-to-do-cross-validation)
 * [](#)
 * [](#)
 
@@ -103,9 +106,10 @@
     * Often a "one-standard error" rule is used with cross-validation, in which we choose the most parsimonious model whose error is no more than one standard error above the error of the best model.
   * Our final chosen model is ![chosen_model](resources/f_alpha.gif), which we then fit to all the data.
 
-## K-Fold Cross-Validation  
-## Leave-One-Out Cross-Validation
-* Special case of K-Fold cross-validation when `K=N`.
+## Types of Cross-Validation
+* K-Fold Cross-Validation  
+* Leave-One-Out Cross-Validation
+  * Special case of K-Fold cross-validation when `K=N`.
 
 ## How to Choose K?
 * With `K=N`, the cross-validation estimator is approximately unbiased for the trun (expected) prediction error, but have high variance because the N "training sets" are so similar to one another.
