@@ -9,6 +9,7 @@
   * [What Might go Wrong with ML?](#what-might-go-wrong-with-ml)
   * [Model Complexity and Overfitting](#model-complexity-and-overfitting)  
 * [Cross-Validation](#cross-validation)
+  * [What's the Purpose of Cross-Validation?](#whats-the-purpose-of-cross-validation)
 * [](#)
 * [](#)
 
@@ -99,12 +100,22 @@
   ![Cross-Validation-with-Alpha-Equation](resources/cv_alpha_eqn.gif)
   
   * The function ![cross_validation_prediction_error](resources/cv_alpha.gif) provides an estimate of the test error curve, and we find the hyperparameter that minimizes it.
+    * Often a "one-standard error" rule is used with cross-validation, in which we choose the most parsimonious model whose error is no more than one standard error above the error of the best model.
   * Our final chosen model is ![chosen_model](resources/f_alpha.gif), which we then fit to all the data.
-  
-## K-Fold Cross-Validation  
 
+## K-Fold Cross-Validation  
 ## Leave-One-Out Cross-Validation
 * Special case of K-Fold cross-validation when `K=N`.
+
+## How to Choose K?
+* With `K=N`, the cross-validation estimator is approximately unbiased for the trun (expected) prediction error, but have high variance because the N "training sets" are so similar to one another.
+  * Leave-one-out cross-validation has low bias but can have high variance. 
+* With K smaller, cross-validation estimator has lower variance, but bias could be a problem, depending on how the performance of the learning method varies with the size of the training set. 
+* It is thus important to report the estimated standard error of the CV estimate. 
+
+## The Right Way to Do Cross-validation
+* In general, with a multistep modeling procedure, cross-validation must be applied to the entire sequence of modeling steps. In particular, samples must be "left out" before any selection or filtering steps are applied. There is one qualification: initial *unsupervised* screening steps (no class labels are involved) can be done before samples are left out. 
+  * Leaving samples out (in cross-validation) **after** the variables (features) have been selected (based on all of the samples) does not correctly mimic the application of the classifier to a completely independent test set, since these predictors "have already seen" the left out samples. 
 
 ## Other Related
 * Forward Chaining is the cross validation for Time Series
