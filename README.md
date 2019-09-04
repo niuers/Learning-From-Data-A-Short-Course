@@ -41,7 +41,6 @@
 * What are the inputs and labels?
 * How would the business manager evaluate success/performance?
 * How would we evaluate the performance of an ML algorithm during development?
-* Can you build a model for one use using another user’s data? Possibly no!
 * How often should we retrain our model?
 * Existing resources/libraries/services that we can leverage?
 * Next steps?
