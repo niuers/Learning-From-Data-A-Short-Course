@@ -124,3 +124,83 @@
   * As you test more and more on a data set, you are more likely to overfit.
   * The size of confidence interval grows with the number of things you are testing proportionately.  
 
+# Decision Theory
+## What Types of Problem are we solving?
+* In data science problems, we generally need to:
+  * Make a decision
+  * Take an action
+  * Produce some output
+* Have some evaluation criterion
+
+> An action is the generic term for what is produced by our system.
+  * Examples of actions produced by our system:
+    * Produce a 0/1 classification
+    * Reject a null hypothesis
+    * Translate French to English text
+  * Is this action the same as the one referred above?
+  
+* Decision theory is about finding "optimal" actions, under various definitions of optimality.
+* Examples of Evaluation Criteria
+  * Is classification correct?
+  * Does the text transcription exactly match the spoken words?
+
+### Input
+* Most problems have an extra piece, going by various names
+  * Inputs [ML]
+  * Covariates [Statistics]
+* Example of Inputs
+  * A picture
+  * A search query
+
+### Outcomes or Output or Label
+* Inputs often paired with outputs or outcomes or labels
+* Examples of Outputs
+  * Whether or not the picutre contains an animal
+  * Which, if any of the suggested URLs were selected
+
+### Typical Sequence of Events
+Many problems domains can be formalized as follows:
+* Observe input `x`
+* Take action `a`
+* Observe outcome `y`
+* Evaluation action in relation to the outcome: `l(a,y)`
+
+Note
+* Outcome `y` is often independent of action `a`.
+* But this is not always the case:
+
+## Formalization
+### The Spaces
+* Input Space
+* Action Space
+* Output Space
+* Example: What are the spaces for linear regression (meaning the prediction function here)?
+  * Input Space: R<sup>d</sup>
+  * Action Space: Real Numbers
+  * Output Space: Real Numbers
+
+### Decision Function
+* A decision function (or prediction function) gets input `x` from Input Space, and produces an action `a` in Action Space, 
+![Decision Function](resources/decision_function.gif)
+
+### Loss Function
+* A loss function evaluates an action in the context of the output `y`
+![Loss Function](resources/loss_function.gif)
+
+### Formalizing a Business (Data Science) Problem
+* First two steps to formalizing a problem:
+  * Define the action space (i.e. the set of possible actions)
+  * Specify the evaluation criterion
+* Formalization may evolve gradually, as you understand the problem better  
+* When a stakeholder asks the data scientist to solve the problem, she
+  * may have an opinion on what the action space should be, and 
+  * hopefully has an opinion on the evaluation criterion, but
+  * she really cares about you producing a 'good' decision function
+
+## Evaluating a Decision Function
+* Loss function evaluates a single action
+* How to evaluate the decision function as a whole?
+* We'll use the statistical learning theory as our framework
+
+
+
