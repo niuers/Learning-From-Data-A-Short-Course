@@ -125,3 +125,12 @@
 * Finite Class Lemma???
   * As you test more and more on a data set, you are more likely to overfit.
   * The size of confidence interval grows with the number of things you are testing proportionately.  
+
+## TODO
+* SVM “is just” ERM with hinge loss with `2 regularization
+* Pegasos “is just” SVM with SGD with a particular step size rule
+* Random forest “is just” bagging with trees, with an interesting tweak on choosing splitting variables
+* Matrix Calclus
+* 
+
+* Print out concept checks and problems
