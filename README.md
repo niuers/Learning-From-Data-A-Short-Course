@@ -127,6 +127,7 @@
   * The size of confidence interval grows with the number of things you are testing proportionately.  
 
 ## TODO
+* Think about both amount of data and computation needed to learn.
 * SVM “is just” ERM with hinge loss with `2 regularization
 * Pegasos “is just” SVM with SGD with a particular step size rule
 * Random forest “is just” bagging with trees, with an interesting tweak on choosing splitting variables
