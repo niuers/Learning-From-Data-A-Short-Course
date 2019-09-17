@@ -36,6 +36,7 @@
 > A machine learning algorithm takes "training data" as input, "learns" from the training data, and generates an ouptut, which is a "predcition function". Machine learning helps to find the **best prediction funciton**. 
 
 * Machine learning is basically programming with data. [Alex Smola, CMU 10701-15]
+* Roughly speaking learning is the process of converting experience into expertise of knowledge.
 
 ## How to Setup a Business Problem as a Machine Learning Problem?
 * What is the business manager really looking for?
