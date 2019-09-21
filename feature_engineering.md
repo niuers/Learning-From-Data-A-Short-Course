@@ -29,6 +29,7 @@
 # Understand Data
 
 ## The Four Levels of Data
+
 #### The Nominal Level
 
 > It has the weakest structure. It is discrete and order-less. It consists of data that are purely described by name. Basic examples include blood type `(A, O, AB)`, species of animal, or names of people. These types of data are all qualitative.
