@@ -29,10 +29,8 @@
 # Understand Data
 
 ## The Four Levels of Data
-
-#### The Nominal Level
-
-> It has the weakest structure. It is discrete and order-less. It consists of data that are purely described by name. Basic examples include blood type `(A, O, AB)`, species of animal, or names of people. These types of data are all qualitative.
+### The Nominal Level
+> The nominal level has the weakest structure. It is discrete and order-less. It consists of data that are purely described by name. Basic examples include blood type `(A, O, AB)`, species of animal, or names of people. These types of data are all qualitative.
 
 * Count the number of different values
   ```
@@ -44,11 +42,11 @@
   df['col_name'].value_counts().sort_values(ascending=False).head(20).plot(kind='bar')
   ```
 
-#### The Ordinal Level
-
-* The ordinal scale inherits all of the properties of the nominal level, but has important additional properties:
+### The Ordinal Level
+> The ordinal scale inherits all of the properties of the nominal level, but has important additional properties:
   * Data at the ordinal level can be naturally ordered
   * This implies that some data values in the column can be considered better than or greater than others (e.g. grades A,B,C)
+  * However, the difference between different levels need not be the same, so it's meaningless to add or subtract values.
 
 * As with the nominal level, data at the ordinal level is still categorical in nature, even if numbers are used to represent the categories.
   * Median and percentiles
@@ -58,9 +56,8 @@
   df['col'].value_counts().plot(kind='box')
   ```
 
-#### The Interval Level
-
-* At the interval data level, we are working with numerical data that not only has ordering like at the ordinal level, but also has meaningful differences between values. This means that at the interval level, not only may we order and compare values, we may also add and subtract values. 
+### The Interval Level
+> At the interval data level, the numerical data not only has ordering like at the ordinal level, but also has meaningful differences between values. This means that at the interval level, not only may we order and compare values, we may also add and subtract values. 
 * Ratios of values have no meaning, because the value of zero is arbitrary. e.g. temperature in degrees Fahrenheit or degrees Celsius and time.
 
 
@@ -94,8 +91,8 @@ df.groupby('col1').mean()['col2'].plot()
 f.groupby('col1').mean()['col2'].rolling(20).mean().plot()
 ```
 
-#### The Ratio Level
-* Now we have a notion of true zero which gives us the ability to multiply and divide values. It allows ratio statement. e.g. Degrees Kelvin has a 0 point (absolute 0, no Degree Kelvin below 0) and the steps in both these scales have the same degree of magnitude.	
+### The Ratio Level
+> The ratio level has a notion of true zero which gives us the ability to multiply and divide values. It allows ratio statement. e.g. Degrees Kelvin has a 0 point (absolute 0, no Degree Kelvin below 0) and the steps in both these scales have the same degree of magnitude.	
 
 1. Bar chart
 ```
