@@ -471,6 +471,7 @@ To summarize, the lesson is: the right feature scaling can be helpful for classi
 
 
 1. Dummy Encoding
+   1. Dummy variables represent a K-level qualitative variable using a vector of K binary variables or bits, only one of which is "on" at a time. 
    1. Dummy coding removes the extra degree of freedom by using only k–1 features in the representation. One feature is thrown under the bus and represented by the vector of all zeros. This is known as the **reference category**.
    1. There will be total k-1 feature columns, with zeroes for the records of the reference category in all k-1 feature columns.
    1. With dummy coding, the bias coefficient represents the mean value of the response variable y for the reference category. The coefficient for the *i*th feature is equal to the difference between the mean response value for the *i*th category and the mean of the reference category. It encodes the effect of each category relative to the reference category, which may look strange.
