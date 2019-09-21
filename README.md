@@ -19,14 +19,20 @@
 
 
 # Concepts
+
 ## What is Machine Learning for?
+
 * Solve a prediction problem: given an input `x`, predict an "appropriate" output `y`
-  * Binary Classification
-  * Multiclass
-  * Regression
+  * Predict qualitive outputs
+    * Multiclass
+    * Binary Classification
+  * Predict quantitative outputs
+    * Regression
+  * Both can also be viewed as a task in function approximation
 
 * Describe how the given data are organized or clustered.
   * Clustering
+  
 ### Types of Learning
 * Supervised vs. Unsupervised
   * An intermediate learning setting in which, while the training examples contain more information than the test examples, the learner is required to predict even more information for the test examples. For example, reinforcement learning.
