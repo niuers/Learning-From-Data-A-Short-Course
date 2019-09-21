@@ -182,6 +182,8 @@ Definition: A successful learner should be able to progress from individual exam
 * Pegasos “is just” SVM with SGD with a particular step size rule
 * Random forest “is just” bagging with trees, with an interesting tweak on choosing splitting variables
 * Matrix Calclus
-* 
+* Hyperplane and subspace
+* Affine set
 
 * Print out concept checks and problems
+
