@@ -184,6 +184,7 @@ Definition: A successful learner should be able to progress from individual exam
 * Matrix Calclus
 * Hyperplane and subspace
 * Affine set
+* nonsingular
 
 * Print out concept checks and problems
 
