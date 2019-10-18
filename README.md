@@ -18,6 +18,12 @@
 
 
 
+# Philosophy
+* It's important to understand the ideas behind the various techniques, in order to know how and when to use them.
+* One has to understand the simpler methods first, in order to grasp more sophistated methods
+* It is important to accurately assess the performance of a method, to know how well or how bad it is working (simpler methods often perform as well as fancier ones!) [Stanford Statistical Learning Course](#https://lagunita.stanford.edu/courses/HumanitiesSciences/StatLearning/Winter2016)
+* 
+
 # Concepts
 
 ## What is Machine Learning for?
