@@ -50,6 +50,12 @@
   * Adversarial Teacher: e.g. spammer makes an effort to mislead the spam filtering designer
 * Online vs. Batch Learning Protocol
 
+### Machine Learning Algorithms
+#### Smoothers
+* Nearest Neighbor Methods
+* Kernel Smoother
+* Spline Smoother
+
 ### Relations to other fields
 * Machine learning can be viewed as a branch of AI.
   * But ML is not trying to build automated imitation of intelligent behavior, but rather to complement human intelligence.
