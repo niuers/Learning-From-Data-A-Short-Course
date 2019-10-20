@@ -51,10 +51,37 @@
 * Online vs. Batch Learning Protocol
 
 ### Machine Learning Algorithms
+#### Linear Regression
+* Subset Selection
+* Lasso
+* Linear Models with Least Squares (more flexible with all variables, i.e. no sparsity)
+* Generalized Additive Models
+
+#### Others
+* Trees
+* Bagging
+* Boosting
+* SVM
+
 #### Smoothers
 * Nearest Neighbor Methods
 * Kernel Smoother
 * Spline Smoother
+  * Thin-plate spline
+  
+### Trade-Offs
+#### Prediction Accuracy vs. Interpretability
+* Linear models are easy to interpret but have less accuracy.
+
+#### Good-fit vs. Over-fit vs. Under-fit
+
+* Choosing the amount of flexibility of a model amounts to a bias-variance trade-off. And depending on the problem, we might want to make the trade-off in a different place. And we can use the validation set or left out data to help us make that choice.
+* More complicated models typically have lower bias at the cost of higher variance. This has an unclear effect on Reducible Error (could go up or down) and no effect on Irreducible Error.
+
+
+
+#### Parsimony vs. Black-box
+* We often prefer a simpler model involving few variables over a black-box predictor involving them all.
 
 ### Relations to other fields
 * Machine learning can be viewed as a branch of AI.
