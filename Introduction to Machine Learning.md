@@ -224,6 +224,8 @@ Definition: A successful learner should be able to progress from individual exam
 * Hyperplane and subspace
 * Affine set
 * nonsingular
+* Confidence interval (ISL)
+* Hypothesis test: explanation of p-value, Hypothesis Testing and Confidence Intervals
 
 * Print out concept checks and problems
 
