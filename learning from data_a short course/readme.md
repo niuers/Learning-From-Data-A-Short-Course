@@ -24,3 +24,6 @@ Formally, we have a target distribution, $P(y|X)$ instead. A data point $(x,y)$ 
 * $P(y|X)$ is what we are trying to learn, $P(X)$ only quantifies the relative importance of the point $X$ in gauging how well we have learned. 
 
 * Note, the Hoeffding inequality applies to noise target as well because it applies to an arbitrary, unknown target function. Assume we randomly pick all the $y$'s according to the distribution $P(y|X)$ over the entire input space $\mathcal{X}$. This realization of $P(y|X)$ is effectively a target function. Therefore the inequality will be valid no matter which particular random realization the 'target function' happens to be.
+
+# Chapter 2 Traing versus Testing
+## 2.1 Theory of Generalization
