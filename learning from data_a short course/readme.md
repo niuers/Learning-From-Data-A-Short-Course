@@ -1,1 +1,3 @@
-## 1.4.2 Noise Target
+# Chapter 2 Traing versus Testing
+## 2.1 Theory of Generalization
+
