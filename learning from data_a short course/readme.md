@@ -48,3 +48,8 @@ The out-of-sample error $E_{out}$ measures how well our training on data $\mathc
 * The error bound however, can go infinite with the number of hypothesis $M$. We need to replace $M$ with some other meaningful value.
 * Notice that the error bound is derived using union bounds, while in reality, many hypothesis $h$ can have large overlap, thus the probability of unioned events is much smaller than indicated by the union bound. 
   
+### 2.1.1 Effective Number of Hypotheses
+
+* Growth function: It is a combinatorial quantity that captures how difference the hypotheses in $\mathcal{H}$ are, and hence how much overlap the different events have. It is based on the number of different hypotheses that $\mathcal{H}$ can implement but only on a finite sample of points rather than the entire input space $\mathcal{X}$.  
+* We are going to replace the $M$ in bound by growth function.
+
