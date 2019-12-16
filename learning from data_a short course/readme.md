@@ -46,4 +46,5 @@ The out-of-sample error $E_{out}$ measures how well our training on data $\mathc
   * The second bound ensures that we did the best we could we our $\mathcal{H}$. No other hypothesis $h\in \mathcal{H}$ has $E_{out}(h)$ significantly better than $E_{out}(g)$ because every hypothesis with a higher $E_{in}$ than $g$ will have a comparably higher $E_{out}$ due to the second bound.
 
 * The error bound however, can go infinite with the number of hypothesis $M$. We need to replace $M$ with some other meaningful value.
+* Notice that the error bound is derived using union bounds, while in reality, many hypothesis $h$ can have large overlap, thus the probability of unioned events is much smaller than indicated by the union bound. 
   
