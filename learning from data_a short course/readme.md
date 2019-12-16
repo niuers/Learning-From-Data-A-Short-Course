@@ -27,5 +27,23 @@ x1, x2, y
 
 
 # Chapter 2 Traing versus Testing
+We need a mathematical theory to characterize the distinction between training and testing. 
+
 ## 2.1 Theory of Generalization
 
+The out-of-sample error $E_{out}$ measures how well our training on data $\mathcal{D}$ has generalized to data we haven't seen before. It is based on the performance over the entire input space $\mathcal{X}$. 
+
+* Generalization Error
+  * One can define the generation error as the discrepancy between $E_{in}$ and $E_{out}$. The Hoeffding inequality provides a way to characterize the generation error with a probablistic bound.
+* Generalization Bound: it bounds $E_{out}$ in terms of $E_{in}$.
+  * From Hoeffding inequality, we can derive two generation bounds for $E_{out}$. For a given tolerance $\delta$, with probability of at least $1-\delta$, and for the final hypothesis $g$ with minimum $E_{in}$, we have
+  \begin{align}
+  E_{out}(g) &\le E_{in}(g) + \sqrt{\frac{1}{2N}ln\frac{2M}{2\delta}}
+  E_{out}(g) &\ge E_{in}(g) - \sqrt{\frac{1}{2N}ln\frac{2M}{2\delta}}
+  \end{align}
+  
+  * The first bound ensures that the final hypothesis $g$ will do well in out-of-sample. 
+  * The second bound ensures that we did the best we could we our $\mathcal{H}$. No other hypothesis $h\in \mathcal{H}$ has $E_{out}(h)$ significantly better than $E_{out}(g)$ because every hypothesis with a higher $E_{in}$ than $g$ will have a comparably higher $E_{out}$ due to the second bound.
+
+* The error bound however, can go infinite with the number of hypothesis $M$. We need to replace $M$ with some other meaningful value.
+  
