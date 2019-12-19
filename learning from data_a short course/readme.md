@@ -53,3 +53,51 @@ The out-of-sample error $E_{out}$ measures how well our training on data $\mathc
 * Growth function: It is a combinatorial quantity that captures how difference the hypotheses in $\mathcal{H}$ are, and hence how much overlap the different events have. It is based on the number of different hypotheses that $\mathcal{H}$ can implement but only on a finite sample of points rather than the entire input space $\mathcal{X}$.  
 * We are going to replace the $M$ in bound by growth function.
 
+## 2.2 Interpretataion of the Generalization Bound
+* The VC analysis establishes the feasibility of learning for infinite hypothesis set, the only kind we use in practice.
+* Although the bound is loose, it tends to be equally loose for different learning models, and hence is useful for comparing the generalization performance of these models.
+
+* Some practical Observations
+  * Learning models with lower $d_{VC}$ tend to generalize better than those with higher $d_{VC}$.
+  * A popular rule of thumb to get a decent generalization performance: requires the number of samples is approximately proportional to the VC dimension, for example $N \ge 10d_{VC}$.
+
+### 2.2.1 Sample Complexity
+* The sample complexity determines how many training examples $N$ are needed to achieve a certain generalization performance.
+
+### 2.2.2 Penalty for Model Complexity
+* From VC generalization bound, we have 
+\begin{align}
+E_{out}(g) &\le E_{in}(g) + \Omega(N, \mathcal{H}, \delta)\\
+\end{align}
+* The bound $\Omega(N, \mathcal{H}, \delta)$ can be treated as a penalty of model complexity. 
+  * If we use more complex $\mathcal{H}$, i.e. larger $d_{VC}$, it's larger.
+  * If we insist higher confidence, i.e. lower $\delta$, it's larger.
+  * If we have more training examples $N$, it's smaller.
+
+* $E_{in}(g)$
+  * If we use more complex $\mathcal{H}$, $E_{in}(g)$ is smaller
+
+* There's tradeoff between $\Omega$ and $E_{in}$. The optimal model is a compromise that minimizes a combination of the two terms.
+
+### 2.2.3 The Test Set
+* While the $E_{in}$ helps in training process and gives us a loose estimate (generation bound) of $E_{out}$, it is useless If our goal is to get an accurate forecast of $E_{out}$.
+* If we use a test set and compute $E_{test}$, it is a better approximation to $E_{out}$. Here we can use Hoeffding inequality for a single hypothesis since the final hypothesis $g$ has been fixed. 
+* The test set is also not biased in its estimate of $E_{out}$. The training set has an optimistic bias since it was used to choose a hypothesis that look good on it. The test set just has straight finite-sample variance (so does training set) but no bias. 
+
+### 2.2.4 Other Target Types
+* We can just change the definition of $E_{in}$ using expected squared errors.
+
+## 2.3 Approximation-Generalization Tradeoff
+* When we select the hypothesis set $\mathcal{H}$, we need balance two conflicting goals: The VC bound is one way to look at this tradeoff (especially for binary error).
+  * To have some hypothesis in $\mathcal{H}$ that can approximate $f$. If $\mathcal{H}$ is too simple, we fail to approximate $f$ well, and end up with a large in-sample error term.
+  * To enable the data to zoom in on the right hypothesis. If $\mathcal{H}$ is too complex, we may fail to generalize well because of the large model complexity term. 
+
+* Bias and Variance is another way to look at the tradeoff, which is particularly suited for squared error. 
+
+### 2.3.1 Bias and Variance
+* Variance: one can view it as a measure of 'instability' in the learning model.
+
+
+
+
+  
