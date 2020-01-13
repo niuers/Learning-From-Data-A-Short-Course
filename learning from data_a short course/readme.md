@@ -25,10 +25,16 @@ x1, x2, y
 -2,1,-1
 
 # Questions
+## Chapter 2
+* How do we generalize from training data? 
 * How to understand VC dimension? What is the VC dimension of linear models, e.g. perceptron? 
 * How to understand the bounds? 
+* How to understand the two competing forces: approximation and generalization?
+* How to understand the bias variance trade off? 
+* Why do we need test set? What's the difference between train and test set? What are the advantages of using a test set? 
 
-### 3.3 Logistic Regression
+## Chapter 3
+
 * Why minimize perceptron requires combinatorial efforts while minimize linear regression requires just analytic solution. Logistic regression needs gradient descent.
 
 * When can GD be used? What algorithms use gradient descent method? What use sub-gradient methods? What are the requirements for GD? 
