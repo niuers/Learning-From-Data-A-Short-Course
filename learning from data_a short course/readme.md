@@ -32,7 +32,9 @@ x1, x2, y
 * Why minimize perceptron requires combinatorial efforts while minimize linear regression requires just analytic solution. Logistic regression needs gradient descent.
 
 * When can GD be used? What algorithms use gradient descent method? What use sub-gradient methods? What are the requirements for GD? 
+What are the advantages of using SGD? What does SGD work at all? What's the convergence speed between GD and SGD? 
 * Why fixed rate learning rate GD works? 
+* How does feature transformation affect the VC dimension? 
 
 
 
