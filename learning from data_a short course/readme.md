@@ -28,6 +28,12 @@ x1, x2, y
 * How to understand VC dimension? 
 * How to understand the bounds? 
 
+### 3.3 Logistic Regression
+* Why minimize perceptron requires combinatorial efforts while minimize linear regression requires just analytic solution. Logistic regression needs gradient descent.
+
+* When can GD be used? What algorithms use gradient descent method? What use sub-gradient methods? What are the requirements for GD? 
+* Why fixed rate learning rate GD works? 
+
 
 
 
