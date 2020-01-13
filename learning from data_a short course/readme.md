@@ -25,7 +25,7 @@ x1, x2, y
 -2,1,-1
 
 # Questions
-* How to understand VC dimension? 
+* How to understand VC dimension? What is the VC dimension of linear models, e.g. perceptron? 
 * How to understand the bounds? 
 
 ### 3.3 Logistic Regression
@@ -35,6 +35,8 @@ x1, x2, y
 What are the advantages of using SGD? What does SGD work at all? What's the convergence speed between GD and SGD? 
 * Why fixed rate learning rate GD works? 
 * How does feature transformation affect the VC dimension? 
+* What are the advantages and disadvantages of feature transformation? 
+
 
 
 
