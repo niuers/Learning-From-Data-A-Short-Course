@@ -36,7 +36,7 @@ x1, x2, y
 * How to understand VC dimension? What is the VC dimension of linear models, e.g. perceptron? 
 * How to understand the bounds? 
 * How to understand the two competing forces: approximation and generalization?
-* How to understand the bias variance trade off? 
+* How to understand the bias variance trade off? How to derive it? 
 * Why do we need test set? What's the difference between train and test set? What are the advantages of using a test set?
 * What is learning curve? How to intepret it? 
 
