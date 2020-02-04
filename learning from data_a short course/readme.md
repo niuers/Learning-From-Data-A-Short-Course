@@ -1,3 +1,4 @@
+This repositary has the solutions to the exercises and problems in book "Learning from Data: A Short Course".
 
 # Questions
 ## Chapter 1
