@@ -25,6 +25,7 @@ What are the advantages of using SGD? What does SGD work at all? What's the conv
 * Why fixed rate learning rate GD works? 
 * How does feature transformation affect the VC dimension? 
 * What are the advantages and disadvantages of feature transformation? 
+* What is a projection matrix? Give an example of projection in 1-D or 2-D. Where does it project to?
 
 
 ## Chapter 4
