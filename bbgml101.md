@@ -97,3 +97,6 @@ Slater's condition
 1. Can think 1 = exp(0^Tx)
 2. Matrix is just transformation
 What is the determinant of matrix? How much volume changes from one dimension to another dimension.
+
+KL divergence >= 0, can be proved by using logz <= z - 1
+meaning of KL divergence: the information loss because we use one distribution to approximate another one
