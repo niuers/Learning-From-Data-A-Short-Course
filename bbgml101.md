@@ -100,3 +100,14 @@ What is the determinant of matrix? How much volume changes from one dimension to
 
 KL divergence >= 0, can be proved by using logz <= z - 1
 meaning of KL divergence: the information loss because we use one distribution to approximate another one
+
+
+
+Frequentist vs. Bayesian:
+1. Frequentist: 
+You can do experiments all the time
+
+MAP agrees 
+
+We don't want to merge frequentist and Bayesian models together. 
+for frequentist, the prior is not uniform, we don't have uniform distribution through the R line.
