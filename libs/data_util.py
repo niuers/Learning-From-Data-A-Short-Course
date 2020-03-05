@@ -2,6 +2,9 @@ import numpy as np
 
 
 def generate_random_numbers01(N, dim, max_v):
+    """
+    max_v: maximum value used to generate random integers
+    """
     random_ints = np.random.randint(max_v, size=(N, dim))
     init_lb = 0
     return (random_ints - init_lb)/(max_v - 1 - init_lb)
@@ -57,3 +60,32 @@ def move_bottom_ring_and_assign(radiuses, radians, diffx, diffy):
             ys[idx] = yi +  diffy
             signs[idx] = -1
     return xs, ys, signs
+
+
+def generate_numbers_from_normal(N, dim, mean, std):
+    pass
+
+def legendre_poly(x, q):
+    """Calculate the Legendre polynomial of degree q at point x
+    """
+    pass
+
+def polynomial(x, Q):
+    """Calculate the value of a polynomial of degree Q at point x
+    """
+    pass
+
+def generate_validation_experiment_dataset(Qf, N, sigma):
+    target_fun = generate_target(Qf)
+    xs = generate_xs(N)
+    ys = generate_ys(xs, sigma)
+
+    z2_s = transform(xs, 2)
+    z10_s = transform(xs, 10)
+    w2 = least_square_solution(z2_s, ys)
+    w10 = least_square_solution(z10_s, ys)
+    Eout_g2 = compute_eout(w2)
+    Eout_g10 = compute_eout(w10)
+    return Eout_g2, Eout_g10
+
+    
