@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.preprocessing import PolynomialFeatures
 
 
 def generate_random_numbers01(N, dim, max_v):
@@ -62,30 +63,85 @@ def move_bottom_ring_and_assign(radiuses, radians, diffx, diffy):
     return xs, ys, signs
 
 
-def generate_numbers_from_normal(N, dim, mean, std):
-    pass
-
-def legendre_poly(x, q):
-    """Calculate the Legendre polynomial of degree q at point x
+def legendre(k, x):
+    """Calculate the Legendre polynomial of degree k at point x
     """
-    pass
+    if k == 0:
+        return np.ones(x.shape) # x might be an array
+    if k == 1:
+        return x
+    
+    ret = (2*k-1)*x*legendre(k-1, x)/k - (k-1)*legendre(k-2, x)/k
+    return ret
 
-def polynomial(x, Q):
-    """Calculate the value of a polynomial of degree Q at point x
+def normalize_legendre_coefficients(aqs):
+    denominator = 0
+    for q, _ in enumerate(aqs):
+        denominator += 1.0/(2*q + 1)
+    scale = np.sqrt(1/denominator)
+
+    res = scale * aqs
+    return res
+
+def legendre_poly(aqs, x):
+    """Calculate the value of a polynomial (which is a sum of Legendre polynomials)
+     at point x
+
+    aqs: coefficients for the Legendre polynomials, a_0, a_1, ..., a_Q
+    The degree of the final polynomial is: len(aqs) - 1
     """
-    pass
 
-def generate_validation_experiment_dataset(Qf, N, sigma):
-    target_fun = generate_target(Qf)
-    xs = generate_xs(N)
-    ys = generate_ys(xs, sigma)
+    res = np.zeros(x.shape)
+    #print('x.shape, aqs.shape', x.shape, aqs.shape)
+    for k, aq in enumerate(aqs):
+        #print('k: ', k)
+        lg = legendre(k, x)
+        #print('lg.shape', lg.shape, 'res.shape: ', res.shape, 'aq: ', aq)
+        res = res + aq * lg.reshape(x.shape)
+        #print('res: ', res.shape)
 
-    z2_s = transform(xs, 2)
-    z10_s = transform(xs, 10)
-    w2 = least_square_solution(z2_s, ys)
-    w10 = least_square_solution(z10_s, ys)
-    Eout_g2 = compute_eout(w2)
-    Eout_g10 = compute_eout(w10)
-    return Eout_g2, Eout_g10
+    
+    return res
+
+def polynomial_transform(q, X):
+    """Transform the X using degree-q polynomials
+    Return: A (N x (q+1)) matrix, where N = len(X)
+    """
+
+    X = X.reshape(-1, 1)
+    poly = PolynomialFeatures(q)
+    res = poly.fit_transform(X)
+    return res
+
+def generate_target_coefficients(Qf, mu = 0, std = 1):
+    # coefficients of the Legendre polynomials in the target function
+    mu, std = 0, 1
+    aqs = np.random.normal(mu, std, Qf+1)
+    normalized_aqs = normalize_legendre_coefficients(aqs)
+    return normalized_aqs
+
+def generate_data_set(N, aqs, sigma):
+    # Generate random x samples
+    max_v = 1000 # The range of integers used to generate random numbers
+    dim = 1
+    xs = generate_random_numbers(N, dim, max_v, -1, 1)
+    epsilons = np.random.normal(0, 1, N).reshape(xs.shape)
+    ys = legendre_poly(aqs, xs) + sigma * epsilons
+    #print('epsilon: ', epsilons.shape, 'ys: ', ys.shape, sigma, 'xs: ', xs.shape)
+    return xs, ys
+
+def calc_pred(w, test_xs):
+    deg = w.shape[0] - 1
+    Z = polynomial_transform(deg, test_xs)
+    test_pred = np.matmul(Z, w)
+    return test_pred
+
+def calc_Eout(w, test_xs, test_ys):
+    test_pred = calc_pred(w, test_xs)
+    test_err = (test_pred - test_ys)
+    E_out = np.matmul(test_err.transpose(), test_err).flatten()
+    return E_out
+
+
 
     
