@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
-
+import functools
 
 def generate_random_numbers01(N, dim, max_v):
     """
@@ -63,11 +63,14 @@ def move_bottom_ring_and_assign(radiuses, radians, diffx, diffy):
     return xs, ys, signs
 
 
+# This function call, legendre(k,x), if not careful, will take very long time for 
+#large k. This requires k, x to be hashable, however np.array is not hashable.
+@functools.lru_cache(128)
 def legendre(k, x):
     """Calculate the Legendre polynomial of degree k at point x
     """
     if k == 0:
-        return np.ones(x.shape) # x might be an array
+        return 1 #np.ones(x.shape) # x might be an array
     if k == 1:
         return x
     
@@ -83,6 +86,7 @@ def normalize_legendre_coefficients(aqs):
     res = scale * aqs
     return res
 
+@functools.lru_cache(128)
 def legendre_poly(aqs, x):
     """Calculate the value of a polynomial (which is a sum of Legendre polynomials)
      at point x
@@ -91,17 +95,23 @@ def legendre_poly(aqs, x):
     The degree of the final polynomial is: len(aqs) - 1
     """
 
-    res = np.zeros(x.shape)
+    res = 0 #np.zeros(x.shape)
     #print('x.shape, aqs.shape', x.shape, aqs.shape)
     for k, aq in enumerate(aqs):
         #print('k: ', k)
-        lg = legendre(k, x)
+        #lg = legendre(k, x)
         #print('lg.shape', lg.shape, 'res.shape: ', res.shape, 'aq: ', aq)
-        res = res + aq * lg.reshape(x.shape)
+        #res = res + aq * lg.reshape(x.shape)
         #print('res: ', res.shape)
+        res += aq * legendre(k, x)
 
-    
     return res
+
+def calc_legendre_array(aqs, xs):
+    ys = np.zeros(xs.shape)
+    for (i, j), x in np.ndenumerate(xs):
+        ys[i,j] = legendre_poly(aqs, x)
+    return ys
 
 def polynomial_transform(q, X):
     """Transform the X using degree-q polynomials
@@ -118,15 +128,18 @@ def generate_target_coefficients(Qf, mu = 0, std = 1):
     mu, std = 0, 1
     aqs = np.random.normal(mu, std, Qf+1)
     normalized_aqs = normalize_legendre_coefficients(aqs)
-    return normalized_aqs
+    return tuple(normalized_aqs.flatten()) #make it hashable
 
-def generate_data_set(N, aqs, sigma):
+def generate_data_set(N, aqs, sigma_square):
     # Generate random x samples
+    sigma = np.sqrt(sigma_square)
     max_v = 1000 # The range of integers used to generate random numbers
     dim = 1
     xs = generate_random_numbers(N, dim, max_v, -1, 1)
     epsilons = np.random.normal(0, 1, N).reshape(xs.shape)
-    ys = legendre_poly(aqs, xs) + sigma * epsilons
+
+    ys = calc_legendre_array(aqs, xs)
+    ys = ys + sigma * epsilons
     #print('epsilon: ', epsilons.shape, 'ys: ', ys.shape, sigma, 'xs: ', xs.shape)
     return xs, ys
 
@@ -139,7 +152,7 @@ def calc_pred(w, test_xs):
 def calc_Eout(w, test_xs, test_ys):
     test_pred = calc_pred(w, test_xs)
     test_err = (test_pred - test_ys)
-    E_out = np.matmul(test_err.transpose(), test_err).flatten()
+    E_out = np.matmul(test_err.transpose(), test_err).flatten()/test_xs.shape[0]
     return E_out
 
 
