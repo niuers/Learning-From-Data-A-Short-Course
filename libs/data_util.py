@@ -130,12 +130,12 @@ def generate_target_coefficients(Qf, mu = 0, std = 1):
     normalized_aqs = normalize_legendre_coefficients(aqs)
     return tuple(normalized_aqs.flatten()) #make it hashable
 
-def generate_data_set(N, aqs, sigma_square):
+def generate_data_set(N, aqs, sigma_square, tol = 0.0):
     # Generate random x samples
     sigma = np.sqrt(sigma_square)
     max_v = 1000 # The range of integers used to generate random numbers
     dim = 1
-    xs = generate_random_numbers(N, dim, max_v, -1, 1)
+    xs = generate_random_numbers(N, dim, max_v, -1 + tol, 1 - tol)
     epsilons = np.random.normal(0, 1, N).reshape(xs.shape)
 
     ys = calc_legendre_array(aqs, xs)
