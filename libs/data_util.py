@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 import functools
 
+
 def generate_random_numbers01(N, dim, max_v):
     """
     max_v: maximum value used to generate random integers
@@ -143,14 +144,16 @@ def generate_data_set(N, aqs, sigma_square, tol = 0.0):
     #print('epsilon: ', epsilons.shape, 'ys: ', ys.shape, sigma, 'xs: ', xs.shape)
     return xs, ys
 
-def calc_pred(w, test_xs):
-    deg = w.shape[0] - 1
-    Z = polynomial_transform(deg, test_xs)
+def calc_pred(w, test_xs, poly_transform=True):
+    Z = test_xs
+    if poly_transform:
+        deg = w.shape[0] - 1
+        Z = polynomial_transform(deg, test_xs)
     test_pred = np.matmul(Z, w)
     return test_pred
 
-def calc_Eout(w, test_xs, test_ys):
-    test_pred = calc_pred(w, test_xs)
+def calc_Eout(w, test_xs, test_ys, poly_transform=True):
+    test_pred = calc_pred(w, test_xs, poly_transform)
     test_err = (test_pred - test_ys)
     E_out = np.matmul(test_err.transpose(), test_err).flatten()/test_xs.shape[0]
     return E_out
