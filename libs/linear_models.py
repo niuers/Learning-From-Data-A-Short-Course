@@ -184,10 +184,19 @@ def lasso_fit_tikhonov(X, y, reg_param):
 def lasso_fit_ivanov(X, y, reg_param):
     # Apply quadratic programming to solve this
     N = len(y) #number of samples
+    d = X.shape[1]
+    num_vars = 2*d
+    ones = np.ones(d)
+    zeros = np.zeros(d)
+    id_zeros = np.zeros((d,d))
     XTX = np.matmul(X.transpose(), X) #(d+1)x(d+1)
-    P = 2*XTX/N
+    Pw = 2*XTX/N
+    Pw = np.hstack([Pw, id_zeros]) 
+    id2_zeros = np.hstack([id_zeros, id_zeros])
+    P = np.vstack([Pw, id2_zeros])
     yTX = np.matmul(y.transpose(), X) #1x(d+1)
-    q = - 2*yTX.transpose()/N
+    qw = - 2*yTX.transpose()/N #(d+1)x1
+    q = np.vstack([qw, zeros.reshape(-1, 1)])
     #number of variables in the quadratic optimization problem
     # We use auxiliary variables t_i with w_i, where |w_i| <= t_i
     # So \sum^{d+1}_{i=1} t_i \le reg_param (e.g. C)
@@ -195,12 +204,8 @@ def lasso_fit_ivanov(X, y, reg_param):
     # -w_i - t_i <= 0
     # The variables are now [w_1,\dots,w_d, t_1,\dots,t_d]^T
 
-    d = X.shape[1]
-    num_vars = 2*d
     # constraint: \sum^{d+1}_{i=1} t_i \le reg_param
-    ones = np.ones(d)
-    zeros = np.zeros(d)
-    sum_m = np.hstack([zeros, ones]) #1x2d
+    sum_m = np.hstack([zeros, ones]).reshape(1, -1) #1x2d
     identity_m = np.identity(d)
     # contraints: w_i - t_i <= 0
     upper_m = np.hstack([identity_m, -identity_m]) #2dx2d
@@ -211,11 +216,21 @@ def lasso_fit_ivanov(X, y, reg_param):
 
     h = np.zeros(num_vars + 1)
     h[0] = reg_param
+    h = h.reshape(-1, 1)
+    print('G: ', G.shape, 'h: ', h.shape)
+    P = cvxopt.matrix(P)
+    q = cvxopt.matrix(q)
+    G = cvxopt.matrix(G)
+    h = cvxopt.matrix(h)
     res = cvxopt.solvers.qp(P, q, G, h)
     if res['status'] != 'optimal':
         print("Couldn't find optimal solution")
         print('Final status: ', res['status'])
     w = res['x']
+    print('w: ', type(w), w)
+    import struct
+    w = np.vectorize(lambda x: struct.unpack('d', x))(np.array(w).T)
+    print('w new: ', type(w), w) 
     return w
 
 def ridge_fit_tikhonov(X, y, reg_param):
