@@ -6,14 +6,17 @@ if cur_dir not in sys.path:
 
 import pandas as pd
 import numpy as np
+import math
+from functools import partial
+
+import cvxopt
 import sklearn
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
-import math
 from sklearn.preprocessing import normalize
-from functools import partial
+from sklearn.linear_model import Ridge
+
 import data_util as du
-import cvxopt
 
 def calc_error(w, xs, ys):
     c = 0
@@ -161,6 +164,10 @@ class LinearRegression(LinearRegressionBase):
             self.w = lasso_fit(Z, y, self.reg_param, self.reg_type)
         elif self.algo_name == 'ridge':
             self.w = ridge_fit(Z, y, self.reg_param, self.reg_type)
+        elif self.algo_name == 'sklearn_lasso':
+            pass
+        elif self.algo_name == 'sklearn_ridge':
+            self.w = sklearn_ridge(Z, y, self.reg_param)
         else:
             raise ValueError("Not implemented")
 
@@ -168,6 +175,7 @@ class LinearRegression(LinearRegressionBase):
         Z = X
         if self.poly_degree:
             Z = du.polynomial_transform(self.poly_degree, X)
+        #print('Z: ', Z.shape, self.w.shape)
         y_pred = np.matmul(Z, self.w)
         return y_pred
     
@@ -177,6 +185,13 @@ class LinearRegression(LinearRegressionBase):
         error = np.matmul(err.transpose(), err).flatten()/y.shape[0]
         return error
 
+def sklearn_ridge(X, y, lambda_t, fit_intercept = False, solver='auto'):
+    #If added 1 into features, set fit_intercept = False
+    #else, if you want to fit the intercept, set it to True
+    # set solver = 'cholesky' to get analytical solution
+    clf = Ridge(alpha=lambda_t, fit_intercept = fit_intercept, solver=solver)
+    clf.fit(X, y)
+    return clf.coef_.reshape(-1, 1)
 
 def lasso_fit_tikhonov(X, y, reg_param):
     raise ValueError("Not implemented")
@@ -211,34 +226,44 @@ def lasso_fit_ivanov(X, y, reg_param):
     upper_m = np.hstack([identity_m, -identity_m]) #2dx2d
     # constraints: -w_i - t_i <= 0
     lower_m = np.hstack([-identity_m, -identity_m]) #2dx2d
-    print('sum_m: ', sum_m.shape, 'upper_m: ', upper_m.shape, 'lower_m: ', lower_m.shape)
+    #print('sum_m: ', sum_m.shape, 'upper_m: ', upper_m.shape, 'lower_m: ', lower_m.shape)
     G = np.vstack([sum_m, upper_m, lower_m])
 
     h = np.zeros(num_vars + 1)
     h[0] = reg_param
     h = h.reshape(-1, 1)
-    print('G: ', G.shape, 'h: ', h.shape)
+    #print('G: ', G.shape, 'h: ', h.shape)
     P = cvxopt.matrix(P)
     q = cvxopt.matrix(q)
     G = cvxopt.matrix(G)
     h = cvxopt.matrix(h)
-    res = cvxopt.solvers.qp(P, q, G, h)
+    res = cvxopt.solvers.qp(P, q, G, h, options={'show_progress':False})
     if res['status'] != 'optimal':
         print("Couldn't find optimal solution")
         print('Final status: ', res['status'])
     w = res['x']
-    print('w: ', type(w), w)
+    #print('w: ', type(w), w)
     import struct
-    w = np.vectorize(lambda x: struct.unpack('d', x))(np.array(w).T)
-    print('w new: ', type(w), w) 
+    w = np.array(w)
+    w = w[:d,:]
+    #print('w new: ', w.shape, w) 
     return w
 
 def ridge_fit_tikhonov(X, y, reg_param):
+    _, d = X.shape
     XTX = np.matmul(X.transpose(), X)
-    inv_X = np.linalg.inv(XTX + reg_param)
-    w = np.matmul(inv_X, np.matmul(X.transpose(), y))
+    #N.B. we are minimizing \frac{1}{N}|Xw-y|^2_2 + \frac{\lambda}{N}w^Tw
+    id_m = np.identity(d)
+    inv_X = np.linalg.inv(XTX + reg_param*id_m)
+    invXXT = np.matmul(inv_X, X.transpose())
+    w = np.matmul(invXXT, y)
     return w
 
+"""
+    XT = np.transpose(X)
+    x_pseudo_inv = np.matmul(np.linalg.inv(np.matmul(XT,X)), XT)
+    w = np.matmul(x_pseudo_inv,y)
+"""
 
 def calc_sum_of_squares(X, y, w):
     N = y.shape[0]
@@ -301,11 +326,12 @@ def ridge_fit_ivanov(X, y, reg_param):
         H = calc_2nd_deriv_ss_with_constraints(X, z)
         H = cvxopt.matrix(H)
         return f, Df, H
-    res = cvxopt.solvers.cp(F)
+    res = cvxopt.solvers.cp(F, options={'show_progress':False})
     if res['status'] != 'optimal':
         print("Couldn't find optimal solution")
         print('Final status: ', res['status'])
     w = res['x']
+    w = np.array(w)
     return w
 
 def lasso_fit(X, y, reg_param, reg_type):
