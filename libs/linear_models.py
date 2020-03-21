@@ -14,7 +14,7 @@ import sklearn
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 from sklearn.preprocessing import normalize
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Ridge, Lasso
 
 import data_util as du
 
@@ -149,25 +149,29 @@ class LinearRegressionBase:
 
 class LinearRegression(LinearRegressionBase):
     def __init__(self, algo_name, reg_type, reg_param, 
-                poly_degree = None):
+                poly_degree = None, solver=None):
         super().__init__(algo_name)
         self.reg_type = reg_type
         self.reg_param = reg_param
         self.poly_degree = poly_degree #If apply polynomial transformation first
+        self.solver = solver
 
 
     def fit(self, X, y):
         Z = X
         if self.poly_degree:
-            Z = du.polynomial_transform(self.poly_degree, X)        
+            Z = du.polynomial_transform(self.poly_degree, X)       
+
         if self.algo_name == 'lasso':
-            self.w = lasso_fit(Z, y, self.reg_param, self.reg_type)
+            self.w = lasso_fit(Z, y, self.reg_param, self.reg_type, self.solver)
         elif self.algo_name == 'ridge':
             self.w = ridge_fit(Z, y, self.reg_param, self.reg_type)
         elif self.algo_name == 'sklearn_lasso':
-            pass
+            self.w = sklearn_lasso(Z, y, self.reg_param)
         elif self.algo_name == 'sklearn_ridge':
             self.w = sklearn_ridge(Z, y, self.reg_param)
+        elif self.algo_name == 'sklearn_lr':
+            self.w = sklearn_linear_regression(Z, y)
         else:
             raise ValueError("Not implemented")
 
@@ -193,11 +197,25 @@ def sklearn_ridge(X, y, lambda_t, fit_intercept = False, solver='auto'):
     clf.fit(X, y)
     return clf.coef_.reshape(-1, 1)
 
+def sklearn_lasso(X, y, lambda_t, fit_intercept = False):
+    #If added 1 into features, set fit_intercept = False
+    #else, if you want to fit the intercept, set it to True
+    # This minimizes: \frac{1}{2N}|Xw-y|^2_2 + \lambda|w|_1
+    clf = Lasso(alpha=lambda_t, fit_intercept = fit_intercept)
+    clf.fit(X, y)
+    return clf.coef_.reshape(-1, 1)    
+
+def sklearn_linear_regression(X, y, fit_intercept = False):
+    clf = sklearn.linear_model.LinearRegression(fit_intercept)
+    clf.fit(X, y)
+    return clf.coef_.reshape(-1, 1)
+
 def lasso_fit_tikhonov(X, y, reg_param):
     raise ValueError("Not implemented")
 
-def lasso_fit_ivanov(X, y, reg_param):
+def lasso_fit_ivanov(X, y, reg_param, solver=None):
     # Apply quadratic programming to solve this
+    # solver is None or 'mosek'
     N = len(y) #number of samples
     d = X.shape[1]
     num_vars = 2*d
@@ -237,9 +255,9 @@ def lasso_fit_ivanov(X, y, reg_param):
     q = cvxopt.matrix(q)
     G = cvxopt.matrix(G)
     h = cvxopt.matrix(h)
-    res = cvxopt.solvers.qp(P, q, G, h, options={'show_progress':False})
+    res = cvxopt.solvers.qp(P, q, G, h, solver = solver, options={'show_progress':False})
     if res['status'] != 'optimal':
-        print("Couldn't find optimal solution")
+        print("Couldn't find optimal solution with reg_param: ", reg_param)
         print('Final status: ', res['status'])
     w = res['x']
     #print('w: ', type(w), w)
@@ -278,9 +296,9 @@ def calc_sum_of_squares(X, y, w):
 
 def calc_ss_with_constraints(X, y, w, C):
     # Compute the sum of squares and quadratic constraint
-    ss = calc_sum_of_squares(X, y, w)
+    ss = calc_sum_of_squares(X, y, w).flatten()
     constraint = np.matmul(w.transpose(), w) - C
-    res = np.array([ss, constraint]).reshape(2, 1) #2x1
+    res = np.array([ss, constraint.flatten()]).reshape(2, 1) #2x1
     return res
 
 def calc_derivative_ss(X, y, w):
@@ -294,18 +312,22 @@ def calc_derivative_ss(X, y, w):
 def calc_derivative_ss_with_constraints(X, y, w):
     dss = calc_derivative_ss(X, y, w) #(num_features +1)x1
     d_constraint = 2*w # (num_features + 1)x1
-    res = np.array([dss, d_constraint]).reshape(2, -1) # 2x(num_features +1)
+    dss = dss.transpose()
+    d_constraint = d_constraint.transpose()
+    res = np.vstack([dss, d_constraint]) # 2x(num_features +1)
     return res
 
 def calc_2nd_deriv_ss(X):
     N = X.shape[0]
-    XTX = np.matmul(X.transpose(), X)
+    # row#1: df1/dx1, df1/dx2, df1/dx3, ...
+    # row#2: df2/dx1, df2/dx2, df2/dx3, ...
+    XTX = np.matmul(X.transpose(), X).transpose()
     res = 2*XTX/N #(num_features+1) x (num_features+1)
     return res
 
 def calc_2nd_deriv_ss_with_constraints(X, z):
     deriv2_ss = z[0]*calc_2nd_deriv_ss(X)
-    deriv2_constraint = z[1] * 2
+    deriv2_constraint = z[1] * 2 * np.identity(X.shape[1])
     res = deriv2_ss + deriv2_constraint
     return res
 
@@ -318,6 +340,7 @@ def ridge_fit_ivanov(X, y, reg_param):
         if w is None:
             w0 = np.zeros((num_features, 1)) #any feasible point
             return 1, cvxopt.matrix(w0)
+        w = np.array(w).reshape(num_features, 1)
         f = calc_ss_with_constraints(X, y, w, reg_param)        
         Df = calc_derivative_ss_with_constraints(X, y, w)
         f, Df = cvxopt.matrix(f), cvxopt.matrix(Df)
@@ -328,18 +351,18 @@ def ridge_fit_ivanov(X, y, reg_param):
         return f, Df, H
     res = cvxopt.solvers.cp(F, options={'show_progress':False})
     if res['status'] != 'optimal':
-        print("Couldn't find optimal solution")
+        print("Couldn't find optimal solution with reg_param: ", reg_param)
         print('Final status: ', res['status'])
     w = res['x']
     w = np.array(w)
     return w
 
-def lasso_fit(X, y, reg_param, reg_type):
+def lasso_fit(X, y, reg_param, reg_type, solver):
     w = None
     if reg_type == 'Tikhonov':
         w = lasso_fit_tikhonov(X, y, reg_param)
     elif reg_type == 'Ivanov':
-        w = lasso_fit_ivanov(X, y, reg_param)
+        w = lasso_fit_ivanov(X, y, reg_param, solver)
     else:
         raise ValueError("Not implemented")
     return w
