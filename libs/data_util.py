@@ -1,10 +1,12 @@
+import math
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 import functools
 
 
-def generate_random_numbers01(N, dim, max_v):
+def generate_random_numbers01(N, dim, max_v = 10000):
     """
+    Generate random numbers between 0 and 1
     max_v: maximum value used to generate random integers
     """
     random_ints = np.random.randint(max_v, size=(N, dim))
@@ -12,6 +14,9 @@ def generate_random_numbers01(N, dim, max_v):
     return (random_ints - init_lb)/(max_v - 1 - init_lb)
 
 def generate_random_numbers(N, dim, max_v, lb, ub):
+    """
+    Generate random numbers between 'lb' and 'ub'
+    """
     zero_to_one_points = generate_random_numbers01(N, dim, max_v)
     res = lb + (ub - lb)*zero_to_one_points
     return res
@@ -159,5 +164,81 @@ def calc_Eout(w, test_xs, test_ys, poly_transform=True):
     return E_out
 
 
-
+def rotate(X, theta, center = None):
+    """Rotate the input point X of angle 'theta'
+    N.B. Positive theta is considered as counter clockwise
     
+    'center': This is the rotation center if specified
+    """
+    if not center:
+        center = np.zeros(X.shape)
+    r = np.linalg.norm(X - center)
+    newX = np.array([r*np.cos(theta), r*np.sin(theta)])
+    return center + newX
+
+def generate_equal_spaced_points_on_circle(center, radius, N, starting_point = None):
+    # LFD Problem 6.13
+    # Generate N equally spaced points on the circule specified
+    # by 'center' and 'radius'
+    # If 'starting_point' is specified, use it as the first point
+
+    x0, y0 = center
+    if not starting_point:
+        starting_point = np.array([x0 + radius, y0])
+    
+    # Angle for each arc
+    points = []
+    theta = 2*math.pi/N
+    for idx in np.arange(N):
+        theta1 = theta * idx
+        p = rotate(starting_point, theta1)    
+        points.append(p)
+    return np.array(points)
+
+def calc_cum_probs(probs):
+    return np.cumsum(probs)
+
+def sort_rnd_numbs_into_bins(rnd_numbers, probs):
+    """
+    Sort an array of random numbers between [0,1]
+    into bins according to their probabilities
+    """
+    cum_probs = calc_cum_probs(probs)
+ 
+    sels = {}
+    for idx, cum_prob in enumerate(cum_probs):
+        lb = 0 if idx == 0 else cum_probs[idx-1]
+        ub = cum_prob
+        sub = rnd_numbers[np.logical_and(rnd_numbers >= lb, 
+                                         rnd_numbers <= ub)]
+        sels[idx] = sub
+    return sels
+
+def generate_gmm(means, covs, probs, N):
+    """Generate Gaussian Mixture Model Data
+    Parameters
+    ==========
+    means: np array
+        The means of Gaussian distributions
+    covs: array of 2D matrices
+        The covariance matrices of Gaussian distributions
+    probs: np array
+        The i-th element is the probability of picking the i-th Gaussian
+    N: int
+        The total number of points
+    """
+    # Number of Gaussians
+    #N_gau = means.size
+    # Generate random numbers between [0,1]
+    gaussian_selection = generate_random_numbers01(N, 1)
+    # Put the random numbers into bins according to their probabilities
+    binned_nums = sort_rnd_numbs_into_bins(gaussian_selection, probs)
+    # We only need the total count of numbers for each Gaussian
+    binned_counts = {idx: len(nums) for idx, nums in binned_nums.items()}
+    gaussians = {}
+    for ix, count in binned_counts.items():
+        mean = means[ix]
+        cov = covs[ix]
+        gs = np.random.multivariate_normal(mean, cov, count)
+        gaussians[ix] = gs
+    return gaussians
