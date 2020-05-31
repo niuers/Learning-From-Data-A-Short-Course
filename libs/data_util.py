@@ -2,6 +2,8 @@ import math
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 import functools
+import h5py
+from sklearn.model_selection import StratifiedShuffleSplit
 
 
 def generate_random_numbers01(N, dim, max_v = 10000):
@@ -242,3 +244,78 @@ def generate_gmm(means, covs, probs, N):
         gs = np.random.multivariate_normal(mean, cov, count)
         gaussians[ix] = gs
     return gaussians
+
+
+# USPS Zip Code Data for Handwritten Recognition
+def load_zip_data(zip_data_path):
+    """Load the USPS zip code data
+    https://www.kaggle.com/bistaumanga/usps-dataset/data
+    """
+    with h5py.File(zip_data_path, 'r') as hf:
+        train = hf.get('train')
+        X_tr = train.get('data')[:]
+        y_tr = train.get('target')[:]
+        test = hf.get('test')
+        X_te = test.get('data')[:]
+        y_te = test.get('target')[:]
+    
+    return X_tr, y_tr, X_te, y_te
+
+def sample_zip_data(X, y, train_size, splits):
+    sss = StratifiedShuffleSplit(n_splits=splits, train_size=train_size, random_state=0)
+    sss.get_n_splits(X, y)
+
+    data_indices = []
+    for train_index, test_index in sss.split(X, y):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]    
+        data_indices.append([X_train, y_train, X_test, y_test])
+    return data_indices
+
+def calc_image_symmetry(X, img_w, img_h):
+    """We define asymmetry as the average absolute difference between
+    an image and its flipped versions, and symmetry as the negation of asymmetry
+
+    X: Nxd: where N is the number of images, d is the number of pixels
+    img_w, img_h: Image width and height, e.g. 16x16
+    Then we have d = img_w x img_h
+    """
+
+    N, d = X.shape
+    if d!= img_w*img_h:
+        raise ValueError("Image width and height don't agree with data.")
+    Xf = X.reshape(N, img_w, img_h)
+    Xf = np.flip(Xf, axis=2)
+    Xf = Xf.reshape(N, d)
+    asy = np.abs(X - Xf)
+    asy = np.mean(asy, axis = 1)
+    sy = -asy
+    return sy
+
+def calc_image_intensity(X):
+    """Compute the average intensity of an image
+    X: Nxd: where N is the number of images, d is the number of pixels
+
+    Return
+    ret: Nx1 matrix
+    """        
+    
+    ret = np.mean(X, axis=1)
+    return ret
+
+
+def compute_features(X_train, X_test):
+    # Compute the symmetry and intensity for images
+    img_w, img_h = 16, 16
+    X_tr_sy = calc_image_symmetry(X_train, img_w, img_h)
+    X_tr_int = calc_image_intensity(X_train)
+
+    X_te_sy = calc_image_symmetry(X_test, img_w, img_h)
+    X_te_int = calc_image_intensity(X_test)
+
+    X_tr = np.hstack([X_tr_int.reshape(-1, 1), X_tr_sy.reshape(-1, 1)])
+    X_te = np.hstack([X_te_int.reshape(-1, 1), X_te_sy.reshape(-1, 1)])
+    return X_tr, X_te
+
+
+

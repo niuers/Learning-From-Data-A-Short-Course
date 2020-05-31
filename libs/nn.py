@@ -64,11 +64,11 @@ class NearestNeighbors:
         self.k = k #number of nearest neighbors
         self.problem_type = problem_type
 
-    def find_nn_idx(self, x):
-        # Find the indexes of nearest neighbors for x
+    def find_nn_idx(self, x, k):
+        # Find the indexes of k nearest neighbors for x
         distances = dist(x, self.X).ravel()
         order = np.argsort(np.array(distances))
-        return order[:self.k]
+        return order[:k]
 
     def find_nn(self, x):
         # Find the nearest neighbors for x
@@ -120,18 +120,19 @@ class CNN:
         S_idx = np.random.choice(N, self.k)
         return S_idx
 
-    def find_inconsistency(self, X, y, cnn):
+    def find_inconsistency(self, X, y, cnn, onn):
         #Is the condensed set training data consistent? 
-        found = False
-        
+        found = False        
         for ix, x1 in enumerate(X): # It can be a point in S as well
             x1 = x1.reshape(1, -1)
             y1 = cnn.predict_one(x1) # O(K)
-            if y1 != y[ix]:
+            yo = onn.predict_one(x1)
+            if y1 != yo:
                 found = True
+                #print('Found diff:', ix, x1, y1, yo)
                 break
         inconsistent_idx = ix if found else None
-        return inconsistent_idx
+        return inconsistent_idx, x1, yo
 
     def setup_cnn(self, X, y, S_idx):
         # Build a NearestNeighbors classifier based on 
@@ -142,15 +143,14 @@ class CNN:
         cnn = NearestNeighbors(S, ys, self.k)
         return cnn
 
-    def augment_S(self, X, y, inconsistent_idx, S_idx):
-        N, d = X.shape
+    def augment_S(self, X, y, inconsistent_y, neighbors_idx, S_idx):
         # The purpose is to find a point different from 
         # and nearest to inconsistent_idx
-        nn = NearestNeighbors(X, y, N)
-        inconsistent_x = X[inconsistent_idx, :].reshape(-1, d)
-        inconsistent_y = y[inconsistent_idx]
-        # Find the neighbors from nearest to farest
-        neighbors_idx = nn.find_nn_idx(inconsistent_x)
+
+        #inconsistent_x = X[inconsistent_idx, :].reshape(-1, d)
+        # inconsistent_y = y[inconsistent_idx] #This is wrong, should be the y prediced by onn
+        #inconsistent_y = onn.predict_one(inconsistent_x)
+
         found = False
         for ix in neighbors_idx:
             if ix in S_idx: #Find x' not in S already
@@ -159,18 +159,34 @@ class CNN:
                 found = True 
                 break
         if found:
+            #print('Found a new idx: ', ix)
             S_idx = np.append(S_idx, ix)
+        else:
+            print("Can't find a new idx.")
         return S_idx
 
     def find_cnn(self, X, y):
-        
-        S_idx = self.init_cnn(X)        
+        N, _ = X.shape
+        S_idx = self.init_cnn(X)
+        onn = NearestNeighbors(X, y, self.k)
         while True:
+            old_s = len(S_idx)
+            #print('Size of S_idx: ', old_s)
             cnn = self.setup_cnn(X, y, S_idx)
-            inconsistent_idx = self.find_inconsistency(X, y, cnn)
+            inconsistent_idx, inconsistent_x, inconsistent_y = self.find_inconsistency(X, y, cnn, onn)
+            #print('inconsistent idx: ', inconsistent_idx)
             if inconsistent_idx is None:
                 break
-            S_idx = self.augment_S(X, y, inconsistent_idx, S_idx)
+            # Find the neighbors from nearest to farest
+            neighbors_idx = onn.find_nn_idx(inconsistent_x, N)
+            #print('Input inconsistency: ', inconsistent_idx, inconsistent_y)
+            #print('NUmber of neighbors: ', len(neighbors_idx), neighbors_idx[:10])
+
+            S_idx = self.augment_S(X, y, inconsistent_y, neighbors_idx, S_idx)
+            if len(S_idx) == old_s:
+                print('No new point added into S. Exit.')
+                break
+        #print('Final S_idx: ', S_idx)
         S = X[S_idx, :]
         Sy = y[S_idx]
         return S_idx, S, Sy

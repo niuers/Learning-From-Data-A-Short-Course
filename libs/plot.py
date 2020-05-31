@@ -112,3 +112,6 @@ def plot_decision_boundaries(xx1, xx2, num_cats, classifier, transformer = None,
     plt.contourf(xx1, xx2, y, alpha=alpha, cmap=cmap)
     plt.xlim(xx1.min(), xx1.max())
     plt.ylim(xx2.min(), xx2.max())
+
+
+    
