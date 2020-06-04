@@ -56,6 +56,14 @@ def create_prototypes(X):
         Z = np.vstack([Z, np.array(new_x)])
     return Z
 
+def find_nn_idx(x, X, k):
+    """Find the first k nearest neighbors of x from points in X
+    """
+    # Find the indexes of k nearest neighbors for x
+    distances = dist(x, X).ravel()
+    order = np.argsort(np.array(distances))
+    return order[:k], distances[order[:k]]
+
 class NearestNeighbors:
     def __init__(self, X, y, k, problem_type='classification'):
         #X: Nxd matrix, where each row corresponds to a data point x in R^d
@@ -66,9 +74,8 @@ class NearestNeighbors:
 
     def find_nn_idx(self, x, k):
         # Find the indexes of k nearest neighbors for x
-        distances = dist(x, self.X).ravel()
-        order = np.argsort(np.array(distances))
-        return order[:k]
+        ret, _= find_nn_idx(x, self.X, k)
+        return ret
 
     def find_nn(self, x):
         # Find the nearest neighbors for x
@@ -282,3 +289,157 @@ class InfluenceCNN():
         Cy = y[C_idx]
         return C_idx, C, Cy
 
+def calc_distance_to_set(x, points):
+    """Calculate the distance of a point 'x' to a set of points.
+    it's defined as the distance to its nearest neighbor in the set
+    """
+
+    x = x.reshape(1, -1)
+    #points = np.array(points).reshape(-1, 2)
+    idx, _ = find_nn_idx(x, points, 1)
+    nn = points[idx].reshape(1, -1)
+    dis = distance.cdist(x, nn, 'euclidean')    
+    return dis, idx
+
+def create_separated_centers(X, M):
+    """Create M separated centers for data points in X
+    """
+
+    N, d = X.shape
+    first_center = np.random.choice(N, 1)
+    centers = np.zeros((M, d)) 
+    centers[0] = X[first_center]
+    for ic in range(1, M):
+        dist_to_centers = -math.inf
+        candidate_center = None
+        #print('------- center: ', ic, centers[:ic], ' ------')
+        for x in X:
+            if x in centers:
+                continue
+            
+            dist, _ = calc_distance_to_set(x, centers[:ic].reshape(-1, d))
+            #print('x: ', x, ' dist: ', dist, '  dist_to_centers', dist_to_centers)
+            if dist > dist_to_centers:
+                dist_to_centers = dist
+                candidate_center = x
+        centers[ic] = candidate_center
+        #print('---- Found center: ', candidate_center)
+    return np.array(centers)
+
+def update_to_voronoi_centers(X, centers):
+    """Given data points in X with initial 'centers'.
+    Update the centers with Voronoi definition and compute
+    their radii
+    """
+    clusters = {}
+    for ix, x in enumerate(X):
+        closest_d = math.inf
+        min_cx = None
+        for cx, c in enumerate(centers):
+            d = distance.cdist(x.reshape(1, -1), c.reshape(1, -1), 'euclidean')
+            if d < closest_d:
+                if clusters.get(cx, None) is None:
+                   clusters[cx] = []
+                min_cx = cx
+                closest_d = d
+        clusters[min_cx].append(ix)
+    
+    # Compute Voronoi center
+    avgs = {}
+    for c_id, points in clusters.items():
+        #print('points: ', c_id, points)
+        avg = np.mean(np.array(X[points]), axis=0)
+        avgs[c_id] = avg
+
+    avgs = np.array([c for _, c in avgs.items()])
+    rs = {}
+    for c_id, points in clusters.items():
+        avg = avgs[c_id]
+        rs[c_id] = np.max(np.linalg.norm(avg - np.array(X[points]), axis=1))
+    return avgs, rs 
+
+def get_current_clusters(X, centers):
+    """Assign each point to a center with radius
+    """
+    clusters = {}
+    for ix, x in enumerate(X):
+        closest_d = math.inf
+        min_cx = None
+        for cx, c in enumerate(centers):
+            d = distance.cdist(x.reshape(1, -1), c.reshape(1, -1), 'euclidean')
+            if d < closest_d:
+                if clusters.get(cx, None) is None:
+                   clusters[cx] = []
+                min_cx = cx
+                closest_d = d
+        clusters[min_cx].append(ix)
+            
+    return clusters
+
+def create_data_partitions(X, M, iters = 10, tol = 1.0e-3):
+    """
+    Given data points in X, create a partition of M clusters
+    using a greedy approach as described in page 16 of 
+    book: Learn From Data: A Short Course. Chapter 6.
+    """
+
+    centers = create_separated_centers(X, M)
+    prev = centers
+    for it in range(iters):
+        centers, radii = update_to_voronoi_centers(X, centers)
+        diff = np.linalg.norm(centers - prev)
+        if diff <= tol:
+            print(f'Found converge in partition at iteration: {it}')
+            break
+        prev = centers
+    clusters = get_current_clusters(X, centers)
+    return centers, radii, clusters
+
+
+# Simple Branch and Bound Approach
+def find_closest_center(query, centers, radii):
+    min_d = math.inf
+    min_ic = None
+    distances = dist(query.reshape(-1, 2), centers).ravel()
+    nn_ids = np.argsort(np.array(distances))
+    for ic in nn_ids:
+        if distances[ic] > radii[ic]:
+            min_ic = ic
+            min_d = distances[ic]
+            break
+    return min_ic, min_d, distances  
+
+def find_nn_in_cluster(query, clus):
+    nn_id, dp = find_nn_idx(query.reshape(-1, 2), clus, 1)
+    nn_pt = clus[nn_id]
+    return nn_pt, dp
+
+def simple_brach_bound(query, X, clusters, centers, radii):
+    center_id, _, dists = find_closest_center(query, centers, radii)
+
+    count1 = 0
+    count2 = 0
+
+    if center_id is None:
+        count1 += 1
+        nn_id, dp = find_nn_idx(query.reshape(-1, 2), X, 1)        
+        nn_pt = X[nn_id]
+        return nn_pt, count1, count2
+        
+    nn_pt, dp = find_nn_in_cluster(query, X[clusters[center_id]])
+    
+    for ic, _ in enumerate(centers):
+        if ic == center_id:
+            continue
+        dc = dists[ic]
+        bound_criteria = dc - radii[ic]
+        if dp <= bound_criteria: #Satisfy the bound, skip current cluster
+            continue
+
+        count2 += 1
+        nn_pt2, dp2 = find_nn_in_cluster(query, X[clusters[ic]])
+        if dp2 < dp:
+            nn_pt = nn_pt2
+            dp = dp2
+    
+    return nn_pt, count1, count2

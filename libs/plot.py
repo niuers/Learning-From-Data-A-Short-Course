@@ -54,14 +54,14 @@ def subplot(xs, ys, plot_func, ax, colors, markers, labels,
 def plt_plot(xs, ys, plot_func, colors, markers, labels, 
             title = None, yscale = None, ylb = None, yub = None,
             xlb = None, xub = None, xlabel = None, ylabel = None,
-            legends = None, legendx = None, legendy = None):
+            legends = None, legendx = None, legendy = None, marker_sizes = None):
 
     # Plot a subplot graph          
-    for x, y, c, m, label in zip(xs, ys, colors, markers, labels):
+    for x, y, c, m, label, s in zip(xs, ys, colors, markers, labels, marker_sizes):
         if plot_func == 'plot':
             plt.plot(x, y, color=c, marker=m, label=label)
         elif plot_func == 'scatter':
-            plt.scatter(x, y, color=c, marker=m, label=label)
+            plt.scatter(x, y, color=c, marker=m, s=s, label=label)
 
     if yscale:
         plt.yscale(yscale)
@@ -114,4 +114,3 @@ def plot_decision_boundaries(xx1, xx2, num_cats, classifier, transformer = None,
     plt.ylim(xx2.min(), xx2.max())
 
 
-    
