@@ -303,6 +303,8 @@ def calc_distance_to_set(x, points):
 
 def create_separated_centers(X, M):
     """Create M separated centers for data points in X
+    using a greedy approach as described in page 16 of 
+    book: Learn From Data: A Short Course. Chapter 6.    
     """
 
     N, d = X.shape
@@ -359,7 +361,7 @@ def update_to_voronoi_centers(X, centers):
     return avgs, rs 
 
 def get_current_clusters(X, centers):
-    """Assign each point to a center with radius
+    """Assign each point to a center
     """
     clusters = {}
     for ix, x in enumerate(X):
@@ -443,3 +445,50 @@ def simple_brach_bound(query, X, clusters, centers, radii):
             dp = dp2
     
     return nn_pt, count1, count2
+
+
+def lloyd_kmeans(X, k, iters = 10, tol = 1.0e-3):
+    """
+    Given data points in X, create a partition of k clusters
+    using Lloyd's Algorithm as described in page 32 of 
+    book: Learn From Data: A Short Course. Chapter 6.
+    """
+
+    centers = create_separated_centers(X, k)
+    prev_Ein = math.inf
+    for it in range(iters):
+        clusters = get_current_clusters(X, centers)
+        centers_d = update_centroids(X, clusters)
+        E_in = calc_in_sample_error(X, clusters, centers_d)
+        #convert the dict 'centers' to array 
+        for cid, center in centers_d.items():
+            centers[cid] = center
+        diff = np.abs(E_in - prev_Ein)
+        prev_Ein = E_in
+        if diff <= tol:
+            #print(f'Found converge in partition at iteration: {it}')
+            break
+    return centers, clusters, prev_Ein
+
+def update_centroids(X, clusters):
+    """Given a set of clusters, compute their centroids
+    """   
+
+    centers = {}
+    for c_id, points in clusters.items():
+        avg = np.mean(np.array(X[points]), axis=0)
+        centers[c_id] = avg
+
+    #centers = np.array([c for _, c in centers.items()])
+    return centers
+
+def calc_in_sample_error(X, clusters, centers):
+    Ein = 0
+    _, d = X.shape
+    for cid, points in clusters.items():
+        #print(cid, type(points), points[0], d, type(X[points]))
+        pts = np.array(X[points]).reshape(-1, d)
+        c = centers[cid].reshape(-1, d)
+        dist = np.linalg.norm(pts - c)
+        Ein += dist**2
+    return Ein

@@ -54,7 +54,7 @@ def subplot(xs, ys, plot_func, ax, colors, markers, labels,
 def plt_plot(xs, ys, plot_func, colors, markers, labels, 
             title = None, yscale = None, ylb = None, yub = None,
             xlb = None, xub = None, xlabel = None, ylabel = None,
-            legends = None, legendx = None, legendy = None, marker_sizes = None):
+            legends = None, legendx = None, legendy = None, marker_sizes = np.ones(5)):
 
     # Plot a subplot graph          
     for x, y, c, m, label, s in zip(xs, ys, colors, markers, labels, marker_sizes):
