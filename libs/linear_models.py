@@ -149,12 +149,13 @@ class LinearRegressionBase:
 
 class LinearRegression(LinearRegressionBase):
     def __init__(self, algo_name, reg_type, reg_param, 
-                poly_degree = None, solver=None):
+                poly_degree = None, solver=None, to_classify=False):
         super().__init__(algo_name)
         self.reg_type = reg_type
         self.reg_param = reg_param
         self.poly_degree = poly_degree #If apply polynomial transformation first
         self.solver = solver
+        self.to_classify = to_classify
 
 
     def fit(self, X, y):
@@ -172,6 +173,8 @@ class LinearRegression(LinearRegressionBase):
             self.w = sklearn_ridge(Z, y, self.reg_param)
         elif self.algo_name == 'sklearn_lr':
             self.w = sklearn_linear_regression(Z, y)
+        elif self.algo_name == 'pesudo_inv':
+            self.w = pseudo_inv(Z, y, self.reg_param)
         else:
             raise ValueError("Not implemented")
 
@@ -179,8 +182,9 @@ class LinearRegression(LinearRegressionBase):
         Z = X
         if self.poly_degree:
             Z = du.polynomial_transform(self.poly_degree, X)
-        #print('Z: ', Z.shape, self.w.shape)
         y_pred = np.matmul(Z, self.w)
+        if self.to_classify:
+            y_pred = np.sign(y_pred)
         return y_pred
     
     def calc_error(self, X, y):
@@ -188,6 +192,23 @@ class LinearRegression(LinearRegressionBase):
         err = y_pred - y
         error = np.matmul(err.transpose(), err).flatten()/y.shape[0]
         return error
+
+def pseudo_inv(X, y, reg):
+    """Linear Regression Pseudo-Inverse Algorithm
+    Learning from Data: A short course. Chapter 3, page 86
+
+    """
+    #N, _ = X.shape
+    # Pre-append column of 1
+    #c = np.ones((N, 1))
+    #Xa = np.hstack((c, X))
+    Xa = X
+    t = np.matmul(Xa.transpose(), Xa)
+    pseudo_inv = np.matmul(np.linalg.inv(t + reg), Xa.transpose())
+    w = np.matmul(pseudo_inv, y.reshape((-1, 1)))
+    return w.reshape(-1, 1)
+
+
 
 def sklearn_ridge(X, y, lambda_t, fit_intercept = False, solver='auto'):
     #If added 1 into features, set fit_intercept = False
@@ -376,3 +397,61 @@ def ridge_fit(X, y, reg_param, reg_type):
     else:
         raise ValueError("Not implemented")
     return w            
+
+
+class SVM(LinearRegressionBase):
+    def __init__(self, is_soft=False):
+        self.is_soft = is_soft #hard margin or soft margin
+        self.w = None
+        self.b = None
+
+    def margin(self):
+        w_norm = np.linalg.norm(self.w)
+        return 1.0/w_norm
+
+    def fit(self, X, y, solver=None):
+        #This algo is implented according to the "Linear Hard-Margin SVM with QP"
+        #on page 8-10 in Chapter 8 from "Learning From Data: A Short Course"
+        
+        # Apply quadratic programming to solve this
+        # solver is None or 'mosek'
+
+        #N.B. X doesn't have the 1 column here
+        N, d = X.shape
+        p = np.zeros((d+1, 1))
+        c = np.ones((N, 1))
+        dzeros = np.zeros((d,1))
+        Qup = np.hstack((np.zeros((1,1)), dzeros.transpose() ))
+        Qdown = np.hstack((dzeros, np.identity(d)))
+        Q = np.vstack((Qup, Qdown))
+        A = np.hstack((c, X))
+        A = np.multiply(A, y.reshape(-1, 1))
+
+        P = cvxopt.matrix(Q)
+        q = cvxopt.matrix(p)
+        G = cvxopt.matrix(-A)
+        h = cvxopt.matrix(-c)
+        res = cvxopt.solvers.qp(P, q, G, h, solver = solver, options={'show_progress':False})
+        if res['status'] != 'optimal':
+            print(f"Couldn't find optimal solution!")
+            print(f"Final status: {res['status']}")
+
+        u = np.array(res['x'])
+        self.b = u[0, :]
+        self.w = u[1:, :]
+
+    def predict(self, X):
+        N, _ = X.shape
+        c = np.ones((N, 1))
+        A = np.hstack((c, X))
+        u = np.vstack((self.b, self.w))
+        pred = np.sign(np.matmul(A, u))
+        return pred
+
+    def calc_error(self, X, y):
+        N, _ = X.shape
+        c = np.ones((N, 1))
+        XX = np.hstack((c, X))        
+        u = np.vstack((self.b, self.w))
+        error = calc_error(u, XX, y)
+        return error

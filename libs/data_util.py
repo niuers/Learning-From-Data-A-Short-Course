@@ -126,7 +126,7 @@ def polynomial_transform(q, X):
     Return: A (N x (q+1)) matrix, where N = len(X)
     """
 
-    X = X.reshape(-1, 1)
+    #X = X.reshape(-1, 1)  # Do I need to do this? 
     poly = PolynomialFeatures(q)
     res = poly.fit_transform(X)
     return res
