@@ -1,5 +1,46 @@
 This repositary holds my solutions to the exercises and problems in book "[Learning from Data: A Short Course](http://work.caltech.edu/telecourse.html)" by Yaser Abu-Mostafa et al.
 
+# Solutions
+## Chapter 1: The Learning Problem
+#### Exercises
+#### Problems
+
+## Chapter 2: Training versus Testing
+#### Exercises
+#### Problems
+
+## Chapter 3: The Linear Model
+#### Exercises
+#### Problems
+
+## Chapter 4: Overfitting
+#### Exercises
+#### Problems
+
+## Chapter 5: Three Learning Principles
+#### Exercises
+#### Problems
+
+## Chapter 6: Similarity-Based Methods
+#### Exercises
+#### Problems
+
+## Chapter 7: Neural Networks
+#### Exercises
+#### Problems
+
+## Chapter 8:  Support Vector Machine
+#### Exercises
+#### Problems
+
+## Chapter 9: Learning Aides
+#### Exercises
+#### Problems
+
+## Appendix B: Linear Algebra
+
+## Appendix C: The E-M Algorithm
+
 # Questions
 ## Chapter 1
 * What are the components of a learning algorithm? 
