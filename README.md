@@ -1,6 +1,5 @@
 This repositary holds my solutions to the exercises and problems in book "[Learning from Data: A Short Course](http://work.caltech.edu/telecourse.html)" by Yaser Abu-Mostafa et al.
 
-# Solutions
 ## Chapter 1: The Learning Problem
 #### Exercises
 #### Problems
