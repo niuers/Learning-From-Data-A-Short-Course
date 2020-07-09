@@ -1,7 +1,7 @@
 This repositary holds my solutions to the exercises and problems in book "[Learning from Data: A Short Course](http://work.caltech.edu/telecourse.html)" by Yaser Abu-Mostafa et al.
 
 ## Chapter 1: The Learning Problem
-#### Exercises
+#### [Exercises](https://github.com/niuers/Learn-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%201%20Exercises.ipynb)
 #### Problems
 
 ## Chapter 2: Training versus Testing
