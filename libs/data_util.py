@@ -4,7 +4,9 @@ from sklearn.preprocessing import PolynomialFeatures
 import functools
 import h5py
 from sklearn.model_selection import StratifiedShuffleSplit
+import scipy
 from scipy.linalg import sqrtm
+from sklearn.utils.extmath import svd_flip
 
 
 def generate_random_numbers01(N, dim, max_v = 10000):
@@ -284,7 +286,7 @@ def split_zip_data(zip_data_path, splits = 1, train_size = 500):
     return data_splits
 
 def set_two_classes(y_train, y_test, digit):    
-    # Classify digit '1' vs. not '1'
+    # e.g. Classify digit '1' vs. not '1'
     y_train[y_train==digit] = 1
     y_test[y_test==digit] = 1
     
@@ -346,31 +348,52 @@ def input_centering(X):
     mean_x = np.mean(X, axis = 0).reshape(1, -1)
     ones = np.ones((N,1))
     Z = X - np.matmul(ones, mean_x)
-    return Z
+    return Z, mean_x
 
 def input_whitening(X):
     # Center the data first
     N, _ = X.shape
-    XX = input_centering(X)
+    XX, _ = input_centering(X)
     COV = np.matmul(XX.transpose(), XX)/N
     sqrt_COV = sqrtm(COV)
     Z = np.matmul(XX, np.linalg.inv(sqrt_COV))
     return Z
 
-def pca(X, top_k, center_first = True):
-    #PAC dimension reduction to top_k
-    if top_k < 1:
-        raise ValueError(f"The reduced dimension {top_k} has to be larger than 0")
+class PCA:
+    def __init__(self, top_k, centering=True):
+        self.top_k = top_k
+        self.centering = centering
+        self.U, self.S, self.V, self.mean = None, None, None, None
+        #PAC dimension reduction to top_k
+        if top_k < 1:
+            raise ValueError(f"The reduced dimension {top_k} has to be larger than 0")
 
-    N, d = X.shape
-    if center_first:
-        XX = input_centering(X)
-    else:
-        XX = X
-    U, S, V = np.linalg.svd(XX)
-    Vk = V[:, :top_k]
-    Z = np.matmul(X, Vk)
-    X_hat = np.matmul(X, Vk)
-    X_hat = np.matmul(X_hat, Vk.transpose())
-    return Z, X_hat, S
+    def fit(self, X):
+        if self.centering:
+            XX, self.mean = input_centering(X)
+        else:
+            XX = X
+        self.U, self.S, self.V = scipy.linalg.svd(XX, full_matrices=False)
+        #Note, V is a Unitary matrix having right singular vectors as rows.
+        self.V = self.V.transpose()
+        self.Vk = self.V[:, :self.top_k]
 
+    def transform(self, X):
+        if self.centering:
+            XX = X - self.mean
+        else:
+            XX = X
+        Z = np.matmul(XX, self.Vk)
+        return Z
+
+    def reconstruct(self, X):
+        if self.centering:
+            XX = X - self.mean
+        else:
+            XX = X
+        X_hat = np.matmul(XX, self.Vk)
+        X_hat = np.matmul(X_hat, self.Vk.transpose())
+        return X_hat
+
+
+                        
