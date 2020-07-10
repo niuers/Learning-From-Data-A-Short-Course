@@ -4,6 +4,7 @@ from sklearn.preprocessing import PolynomialFeatures
 import functools
 import h5py
 from sklearn.model_selection import StratifiedShuffleSplit
+from scipy.linalg import sqrtm
 
 
 def generate_random_numbers01(N, dim, max_v = 10000):
@@ -272,6 +273,25 @@ def sample_zip_data(X, y, train_size, splits):
         data_indices.append([X_train, y_train, X_test, y_test])
     return data_indices
 
+# Deal with ZIP code data
+def split_zip_data(zip_data_path, splits = 1, train_size = 500):
+    # Split the raw data into train and test
+    # splits: specify the number of random splits for each train-test pair
+    X_tr, y_tr, X_te, y_te = load_zip_data(zip_data_path)
+    train_size = train_size
+    splits = splits
+    data_splits = sample_zip_data(X_tr, y_tr, train_size, splits)
+    return data_splits
+
+def set_two_classes(y_train, y_test, digit):    
+    # Classify digit '1' vs. not '1'
+    y_train[y_train==digit] = 1
+    y_test[y_test==digit] = 1
+    
+    y_train[y_train!=digit] = -1
+    y_test[y_test!=digit] = -1
+    return y_train, y_test
+
 def calc_image_symmetry(X, img_w, img_h):
     """We define asymmetry as the average absolute difference between
     an image and its flipped versions, and symmetry as the negation of asymmetry
@@ -318,4 +338,39 @@ def compute_features(X_train, X_test):
     return X_tr, X_te
 
 
+
+# Input Centering
+def input_centering(X):
+    # Make the mean of X to be zero
+    N, _ = X.shape
+    mean_x = np.mean(X, axis = 0).reshape(1, -1)
+    ones = np.ones((N,1))
+    Z = X - np.matmul(ones, mean_x)
+    return Z
+
+def input_whitening(X):
+    # Center the data first
+    N, _ = X.shape
+    XX = input_centering(X)
+    COV = np.matmul(XX.transpose(), XX)/N
+    sqrt_COV = sqrtm(COV)
+    Z = np.matmul(XX, np.linalg.inv(sqrt_COV))
+    return Z
+
+def pca(X, top_k, center_first = True):
+    #PAC dimension reduction to top_k
+    if top_k < 1:
+        raise ValueError(f"The reduced dimension {top_k} has to be larger than 0")
+
+    N, d = X.shape
+    if center_first:
+        XX = input_centering(X)
+    else:
+        XX = X
+    U, S, V = np.linalg.svd(XX)
+    Vk = V[:, :top_k]
+    Z = np.matmul(X, Vk)
+    X_hat = np.matmul(X, Vk)
+    X_hat = np.matmul(X_hat, Vk.transpose())
+    return Z, X_hat, S
 

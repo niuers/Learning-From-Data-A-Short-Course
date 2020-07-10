@@ -65,12 +65,13 @@ def find_nn_idx(x, X, k):
     return order[:k], distances[order[:k]]
 
 class NearestNeighbors:
-    def __init__(self, X, y, k, problem_type='classification'):
+    def __init__(self, X, y, k, problem_type='classification', transformer=None):
         #X: Nxd matrix, where each row corresponds to a data point x in R^d
         self.X = X 
         self.y = y 
         self.k = k #number of nearest neighbors
         self.problem_type = problem_type
+        self.transformer = transformer
 
     def find_nn_idx(self, x, k):
         # Find the indexes of k nearest neighbors for x
@@ -101,7 +102,9 @@ class NearestNeighbors:
 
     def predict(self, X):
         # Predict the y for input X: Mxd matrix
-
+        if self.transformer is not None:
+            X = self.transformer(X)
+            
         M, _ = X.shape
         predicted = []
         for idx in np.arange(M):
