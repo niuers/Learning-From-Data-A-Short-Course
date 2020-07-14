@@ -135,14 +135,16 @@ def polynomial_transform(q, X):
     return res
 
 def generate_target_coefficients(Qf, mu = 0, std = 1):
-    # coefficients of the Legendre polynomials in the target function
+    # coefficients of the Legendre polynomials in the target function, problem 4.4
     mu, std = 0, 1
     aqs = np.random.normal(mu, std, Qf+1)
     normalized_aqs = normalize_legendre_coefficients(aqs)
     return tuple(normalized_aqs.flatten()) #make it hashable
 
 def generate_data_set(N, aqs, sigma_square, tol = 0.0):
-    # Generate random x samples
+    # Generate random x samples for Problem 4.4.
+    #
+    #aqs: Coefficients for Legendre polynomials
     sigma = np.sqrt(sigma_square)
     max_v = 1000 # The range of integers used to generate random numbers
     dim = 1
@@ -359,6 +361,26 @@ def input_whitening(X):
     Z = np.matmul(XX, np.linalg.inv(sqrt_COV))
     return Z
 
+class Whitening():
+    def __init__(self, centering=True):
+        self.centering = centering
+        self.mean = None
+        self.sqrt_COV = None
+    
+    def fit(self, X):
+        N, _ = X.shape
+        if self.centering:
+            X, self.mean = input_centering(X)
+        COV = np.matmul(X.transpose(), X)/N
+        self.sqrt_COV = sqrtm(COV)
+    
+    def transform(self, X):
+        if self.centering:
+            X = X - self.mean
+        Z = np.matmul(X, np.linalg.inv(self.sqrt_COV))
+        return Z
+
+
 class PCA:
     def __init__(self, top_k, centering=True):
         self.top_k = top_k
@@ -367,6 +389,7 @@ class PCA:
         #PAC dimension reduction to top_k
         if top_k < 1:
             raise ValueError(f"The reduced dimension {top_k} has to be larger than 0")
+        self.Vk = None
 
     def fit(self, X):
         if self.centering:
@@ -395,5 +418,3 @@ class PCA:
         X_hat = np.matmul(X_hat, self.Vk.transpose())
         return X_hat
 
-
-                        

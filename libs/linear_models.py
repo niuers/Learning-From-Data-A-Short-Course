@@ -18,6 +18,25 @@ from sklearn.linear_model import Ridge, Lasso
 
 import data_util as du
 
+def compute_H(X, lambda_t):
+    # H(\lambda) = Z(Z^TZ+\lambda_t I )^{-1} Z^T
+    xtx = np.matmul(X.transpose(), X) + lambda_t
+    xtx_inv = np.linalg.inv(xtx)
+    H = np.matmul(X, xtx_inv)
+    H = np.matmul(H, X.transpose())
+    return H
+
+def compute_y_hat(H, y):
+    y_hat = np.matmul(H, y)
+    return y_hat
+
+def calc_effective_dof(H):
+    # Compute the effective degree of freedom in linear models
+    # Page 33 in Chapter 9, example 9.5
+    N = H.shape[0]
+    d_eff = np.trace(H) - np.sum(H)/N
+    return d_eff
+    
 def calc_error(w, xs, ys):
     c = 0
     for x, y in zip(xs, ys):
@@ -120,7 +139,7 @@ def pocket_algo(points, dim, max_it=100, eta = 1,
     if print_out:
         print('final Error Rate: ', sample_err)
         print('final normalized w:', w)
-    return w, w_ts, what_ts, test_w_ts, test_what_ts
+    return w, w_ts, what_ts, test_w_ts, test_what_ts, sample_err
 
 
 def linear_regression(X, y):
@@ -455,3 +474,5 @@ class SVM(LinearRegressionBase):
         u = np.vstack((self.b, self.w))
         error = calc_error(u, XX, y)
         return error
+
+
