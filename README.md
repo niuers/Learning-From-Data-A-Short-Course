@@ -1,44 +1,56 @@
 This repositary holds my solutions to the exercises and problems in book "[Learning from Data: A Short Course](http://work.caltech.edu/telecourse.html)" by Yaser Abu-Mostafa et al.
 
-## Chapter 1: The Learning Problem
-#### [Exercises](https://github.com/niuers/Learn-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%201%20Exercises.ipynb)
-#### Problems
+## Chapter 1: [The Learning Problem](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%201%20The%20Learning%20Problem.ipynb)
 
-## Chapter 2: Training versus Testing
-#### Exercises
-#### Problems
+Missing: Problem 1.7 (b) 
 
-## Chapter 3: The Linear Model
-#### Exercises
-#### Problems
+## Chapter 2: [Training versus Testing](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%202%20Training%20versus%20Testing.ipynb)
 
-## Chapter 4: Overfitting
-#### Exercises
-#### Problems
+Missing: 
+* Exercises: 2.4
+* Problems: 2.4, 2.9, 2.10, 2.14, 2.15, 2.19
 
-## Chapter 5: Three Learning Principles
-#### Exercises
-#### Problems
+## Chapter 3: [The Linear Model](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%203%20The%20Linear%20Model.ipynb)
 
-## Chapter 6: Similarity-Based Methods
-#### Exercises
-#### Problems
+Missing:
+* Exercises: 3.12, 3.15
+* Problems: 3.15 (c), 3.18
 
-## Chapter 7: Neural Networks
-#### Exercises
-#### Problems
+## Chapter 4: [Overfitting](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%204%20Overfitting.ipynb)
 
-## Chapter 8:  Support Vector Machine
-#### Exercises
-#### Problems
+Missing:
+* Exercises: 4.9, 4.10
+* Problems: 4.4 (f), 4.21
 
-## Chapter 9: Learning Aides
-#### Exercises
-#### Problems
+## Chapter 5: [Three Learning Principles](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%205%20Three%20Learning%20Principles.ipynb)
 
-## Appendix B: Linear Algebra
 
-## Appendix C: The E-M Algorithm
+## Chapter 6: [Similarity-Based Methods](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%206%20Similarity-Based%20Methods.ipynb)
+
+Missing:
+* Exercises: 6.3
+* Problems: 6.5, 6.9, 6.11 (b), 6.15
+
+## Chapter 7: [Neural Networks](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%207%20Neural%20Networks.ipynb)
+
+Missing:
+* Exercises: 
+* Problems: 7.2, 7.5, 7.9, 7.12, 7.16
+
+## Chapter 8:  [Support Vector Machine](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%208%20Support%20Vector%20Machine.ipynb)
+
+Missing:
+* Exercises: 
+* Problems: 8.9 (c) 
+
+## Chapter 9: [Learning Aides](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Solutions%20to%20Chapter%209%20Learning%20Aides.ipynb)
+Missing:
+* Exercises: 9.17
+* Problems: 9.11, 9.16, 9.17, 9.26, 9.27, 9.28
+
+## Appendix B: [Linear Algebra](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Appendix%20B%20Linear%20Algebra.ipynb)
+
+## Appendix C: [The E-M Algorithm](https://github.com/niuers/Learning-From-Data-A-Short-Course/blob/master/Appendix%20C%20The%20E-M%20Algorithm.ipynb)
 
 # Questions
 ## Chapter 1
